@@ -1,0 +1,189 @@
+---
+layout: default
+---
+
+{% case page.language %}
+  {% when 'pt' %}
+    {% assign back_text = '← Voltar para a Biblioteca' %}
+    {% assign back_url = '/pt/' %}
+    {% assign doc_info_title = 'Detalhes do Texto' %}
+    {% assign title_label = 'Título' %}
+    {% assign author_label = 'Autor' %}
+    {% assign lang_label = 'Idioma' %}
+    {% assign format_label = 'Formato' %}
+    {% assign download_text = 'Baixar PDF' %}
+    {% assign view_full_text = 'Tela Cheia' %}
+    {% assign description_label = 'Sobre este Texto' %}
+    {% assign no_pdf_text = 'Nenhum arquivo PDF anexado a esta entrada.' %}
+    {% assign lang_name = 'Português (BR)' %}
+  {% when 'es' %}
+    {% assign back_text = '← Volver a la Biblioteca' %}
+    {% assign back_url = '/es/' %}
+    {% assign doc_info_title = 'Detalles del Texto' %}
+    {% assign title_label = 'Título' %}
+    {% assign author_label = 'Autor' %}
+    {% assign lang_label = 'Idioma' %}
+    {% assign format_label = 'Formato' %}
+    {% assign download_text = 'Descargar PDF' %}
+    {% assign view_full_text = 'Pantalla Completa' %}
+    {% assign description_label = 'Acerca de este Texto' %}
+    {% assign no_pdf_text = 'No hay ningún archivo PDF adjunto a esta entrada.' %}
+    {% assign lang_name = 'Español' %}
+  {% when 'it' %}
+    {% assign back_text = '← Torna alla Biblioteca' %}
+    {% assign back_url = '/it/' %}
+    {% assign doc_info_title = 'Dettagli del Testo' %}
+    {% assign title_label = 'Titolo' %}
+    {% assign author_label = 'Autore' %}
+    {% assign lang_label = 'Lingua' %}
+    {% assign format_label = 'Formato' %}
+    {% assign download_text = 'Scarica il PDF' %}
+    {% assign view_full_text = 'Schermo Intero' %}
+    {% assign description_label = 'Informazioni su questo Testo' %}
+    {% assign no_pdf_text = 'Nessun file PDF allegato a questa voce.' %}
+    {% assign lang_name = 'Italiano' %}
+  {% when 'nl' %}
+    {% assign back_text = '← Terug naar de Bibliotheek' %}
+    {% assign back_url = '/nl/' %}
+    {% assign doc_info_title = 'Document Details' %}
+    {% assign title_label = 'Titel' %}
+    {% assign author_label = 'Auteur' %}
+    {% assign lang_label = 'Taal' %}
+    {% assign format_label = 'Formaat' %}
+    {% assign download_text = 'PDF downloaden' %}
+    {% assign view_full_text = 'Volledig Scherm' %}
+    {% assign description_label = 'Over deze Tekst' %}
+    {% assign no_pdf_text = 'Geen PDF-bestand gekoppeld aan dit item.' %}
+    {% assign lang_name = 'Nederlands' %}
+  {% when 'de' %}
+    {% assign back_text = '← Zurück zur Bibliothek' %}
+    {% assign back_url = '/de/' %}
+    {% assign doc_info_title = 'Textdetails' %}
+    {% assign title_label = 'Titel' %}
+    {% assign author_label = 'Autor' %}
+    {% assign lang_label = 'Sprache' %}
+    {% assign format_label = 'Format' %}
+    {% assign download_text = 'PDF herunterladen' %}
+    {% assign view_full_text = 'Vollbild' %}
+    {% assign description_label = 'Über diesen Text' %}
+    {% assign no_pdf_text = 'Diesem Eintrag ist keine PDF-Datei beigefügt.' %}
+    {% assign lang_name = 'Deutsch' %}
+  {% when 'el' %}
+    {% assign back_text = '← Επιστροφή στη Βιβλιοθήκη' %}
+    {% assign back_url = '/el/' %}
+    {% assign doc_info_title = 'Λεπτομέρειες Κειμένου' %}
+    {% assign title_label = 'Τίτλος' %}
+    {% assign author_label = 'Συγγραφέας' %}
+    {% assign lang_label = 'Γλώσσα' %}
+    {% assign format_label = 'Μορφή' %}
+    {% assign download_text = 'Λήψη PDF' %}
+    {% assign view_full_text = 'Πλήρης Οθόνη' %}
+    {% assign description_label = 'Σχετικά με το Κείμενο' %}
+    {% assign no_pdf_text = 'Δεν υπάρχει αρχείο PDF συνδεδεμένο με αυτήν την καταχώρηση.' %}
+    {% assign lang_name = 'Ελληνικά' %}
+  {% else %}
+    {% assign back_text = '← Back to Library' %}
+    {% assign back_url = '/' %}
+    {% assign doc_info_title = 'Document Details' %}
+    {% assign title_label = 'Title' %}
+    {% assign author_label = 'Author' %}
+    {% assign lang_label = 'Language' %}
+    {% assign format_label = 'Format' %}
+    {% assign download_text = 'Download PDF' %}
+    {% assign view_full_text = 'Full Screen' %}
+    {% assign description_label = 'About this Text' %}
+    {% assign no_pdf_text = 'No PDF file attached to this entry.' %}
+    {% assign lang_name = 'English' %}
+{% endcase %}
+
+<div class="reader-container">
+  <!-- Main content area (Viewer + Info) -->
+  <div class="reader-main">
+    <nav class="language-nav" style="justify-content: flex-start; margin-bottom: 1rem;">
+      <a href="{{ site.baseurl }}{{ back_url }}" style="font-weight: 500; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
+        {{ back_text }}
+      </a>
+    </nav>
+
+    <header style="margin-bottom: 2rem;">
+      <h1 style="font-size: 2.2rem; line-height: 1.2; margin-bottom: 0.5rem; font-family: var(--font-serif);">{{ page.title }}</h1>
+      {% if page.author %}
+        <p style="font-family: var(--font-display); color: var(--accent-gold); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.05em;">
+          {{ page.author }}
+        </p>
+      {% endif %}
+    </header>
+
+    {% if page.pdf %}
+      <!-- Mozilla PDF.js Embedded Web Viewer -->
+      <div style="position: relative;">
+        <iframe 
+          src="https://mozilla.github.io/pdf.js/web/viewer.html?file={{ site.baseurl | append: '/assets/uploads/' | append: page.pdf | url_encode }}" 
+          class="pdf-viewer-frame"
+          allowfullscreen>
+        </iframe>
+      </div>
+    {% else %}
+      <div style="padding: 3rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius); text-align: center;">
+        <p style="color: var(--accent-red); font-size: 1.1rem; font-weight: 500;">{{ no_pdf_text }}</p>
+      </div>
+    {% endif %}
+
+    <!-- Text Description / Commentary (Rendered underneath PDF) -->
+    <section class="sidebar-widget" style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 2rem; margin-top: 1.5rem;">
+      <h2 style="font-size: 1.25rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-gold); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+        {{ description_label }}
+      </h2>
+      <div style="font-family: var(--font-serif); font-size: 1.05rem; line-height: 1.8; color: var(--text-main);">
+        {{ content }}
+      </div>
+    </section>
+  </div>
+
+  <!-- Sidebar widget area (Metadata + Download Actions) -->
+  <aside class="reader-sidebar">
+    <div class="sidebar-widget">
+      <h3 class="sidebar-widget-title">{{ doc_info_title }}</h3>
+      <div class="metadata-list">
+        <div class="metadata-item">
+          <span class="metadata-label">{{ title_label }}</span>
+          <span class="metadata-value" style="font-weight: 600;">{{ page.title }}</span>
+        </div>
+        
+        {% if page.author %}
+          <div class="metadata-item">
+            <span class="metadata-label">{{ author_label }}</span>
+            <span class="metadata-value">{{ page.author }}</span>
+          </div>
+        {% endif %}
+
+        <div class="metadata-item">
+          <span class="metadata-label">{{ lang_label }}</span>
+          <span class="metadata-value" style="display: flex; align-items: center; gap: 0.4rem;">
+            {% case page.language %}
+              {% when 'pt' %}🇧🇷{% when 'es' %}🇪🇸{% when 'it' %}🇮🇹{% when 'nl' %}🇳🇱{% when 'de' %}🇩🇪{% when 'el' %}🇬🇷{% else %}🇬🇧{% endcase %} {{ lang_name }}
+          </span>
+        </div>
+
+        <div class="metadata-item">
+          <span class="metadata-label">{{ format_label }}</span>
+          <span class="metadata-value" style="font-family: monospace; font-size: 0.85rem;">PDF Document (.pdf)</span>
+        </div>
+      </div>
+    </div>
+
+    {% if page.pdf %}
+      <div class="sidebar-widget" style="border-color: rgba(214, 48, 49, 0.3);">
+        <h3 class="sidebar-widget-title" style="color: var(--accent-red);">Actions</h3>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <a href="{{ site.baseurl }}/assets/uploads/{{ page.pdf }}" download class="btn btn-primary btn-block">
+            📥 {{ download_text }}
+          </a>
+          <a href="{{ site.baseurl }}/assets/uploads/{{ page.pdf }}" target="_blank" class="btn btn-secondary btn-block">
+            🔗 {{ view_full_text }}
+          </a>
+        </div>
+      </div>
+    {% endif %}
+  </aside>
+</div>

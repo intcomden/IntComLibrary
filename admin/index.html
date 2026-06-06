@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin • Internationalist Communist Library</title>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --bg-primary: #0c0d10;
+      --bg-secondary: #13151c;
+      --bg-tertiary: #191c26;
+      --accent-red: #d63031;
+      --accent-red-hover: #ff4d4d;
+      --accent-red-muted: #8b1e1f;
+      --accent-gold: #e5c158;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --border-color: rgba(214, 48, 49, 0.15);
+      --border-color-focus: rgba(214, 48, 49, 0.4);
+      --font-display: 'Cinzel', serif;
+      --font-sans: 'Inter', sans-serif;
+      --transition: all 0.2s ease;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 40px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    h1, h2, h3 {
+      font-family: var(--font-display);
+      color: #ffffff;
+      margin-bottom: 1.5rem;
+    }
+
+    .brand-logo svg {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 1.5rem auto;
+      display: block;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 16px;
+      margin-bottom: 1.25rem;
+      background: var(--bg-primary);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 0.95rem;
+      font-family: var(--font-sans);
+      transition: var(--transition);
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--border-color-focus);
+      box-shadow: 0 0 0 3px rgba(214, 48, 49, 0.1);
+    }
+
+    label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+      font-weight: 600;
+    }
+
+    button {
+      padding: 12px 24px;
+      background: var(--accent-red);
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    button:hover {
+      background: var(--accent-red-hover);
+    }
+
+    button.secondary {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      margin-left: 0.5rem;
+    }
+
+    button.secondary:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    button.danger {
+      background: #7f1d1d;
+    }
+
+    button.danger:hover {
+      background: #991b1b;
+    }
+
+    .hidden { display: none !important; }
+
+    /* Alert Banners */
+    .status {
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .status.info { background: rgba(96, 165, 250, 0.1); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.2); }
+    .status.success { background: rgba(74, 222, 128, 0.1); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.2); }
+    .status.error { background: rgba(248, 113, 113, 0.1); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.2); }
+
+    /* Tabs & Content Split */
+    .admin-nav {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 2rem;
+      gap: 1rem;
+    }
+
+    .nav-tab {
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      cursor: pointer;
+    }
+
+    .nav-tab.active {
+      color: var(--accent-gold);
+      border-bottom-color: var(--accent-gold);
+    }
+
+    /* Table / Lists */
+    .item-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .list-item {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .item-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .item-title {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .item-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .item-actions button {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="brand-logo">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 75C25 75 38 66 50 66C62 66 75 75 85 75V25C75 25 62 16 50 16C38 16 25 25 15 25V75Z" fill="#d63031" stroke="#ff4d4d" stroke-width="2"/>
+        <path d="M50 16V66" stroke="#0c0d10" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M42 34C37 36 34 41 34 46C34 53 40 59 47 59C51 59 55 56 57 52C53 52 47 48 45 44C43 40 43 36 42 34Z" fill="#e5c158"/>
+        <path d="M39 51L56 34M53 31L56 34L51 39" stroke="#e5c158" stroke-width="3.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <!-- Login screen -->
+    <div id="login-screen">
+      <h1 style="text-align: center;">Moderator Access</h1>
+      <div id="login-status" class="status error hidden"></div>
+      <input type="text" id="mod-username" placeholder="Username (moderator)">
+      <input type="password" id="mod-password" placeholder="Password">
+      <button onclick="modLogin()" style="width: 100%;">Sign In</button>
+    </div>
+
+    <!-- PAT connection screen -->
+    <div id="pat-screen" class="hidden">
+      <h1>GitHub Authentication</h1>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+        Authenticate using your personal GitHub credentials. Your Personal Access Token (PAT) is saved inside your browser session and is cleared when you close the tab.
+      </p>
+      <div id="pat-status" class="status error hidden"></div>
+      <input type="password" id="pat" placeholder="Paste GitHub PAT (repo scope)">
+      <button onclick="connectPAT()" style="width: 100%;">Authenticate & Load Dashboard</button>
+    </div>
+
+    <!-- Main Dashboard UI -->
+    <div id="dashboard" class="hidden">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h1>Admin Control Room</h1>
+        <button class="secondary" onclick="logOut()" style="padding: 6px 12px; font-size: 0.8rem;">Disconnect</button>
+      </div>
+
+      <!-- Alert Bar -->
+      <div id="status" class="status info hidden"></div>
+
+      <!-- Navigation Tabs -->
+      <div class="admin-nav">
+        <button class="nav-tab active" id="tab-btn-publish" onclick="switchTab('publish')">📤 Publish Text</button>
+        <button class="nav-tab" id="tab-btn-manage" onclick="switchTab('manage')">📁 Manage Texts</button>
+      </div>
+
+      <!-- Tab 1: Publish Form -->
+      <div id="tab-publish">
+        <h2 id="form-action-title">Upload New Document</h2>
+        <div style="margin-top: 1rem;">
+          <input type="hidden" id="edit-sha">
+          <input type="hidden" id="edit-path">
+
+          <label for="language">Language</label>
+          <select id="language">
+            <option value="en">English</option>
+            <option value="pt">Português</option>
+            <option value="es">Español</option>
+            <option value="it">Italiano</option>
+            <option value="nl">Nederlands</option>
+            <option value="de">Deutsch</option>
+            <option value="el">Ελληνικά</option>
+          </select>
+
+          <label for="title">Title</label>
+          <input type="text" id="title" placeholder="e.g. Wage Labour and Capital">
+
+          <label for="author">Author</label>
+          <input type="text" id="author" placeholder="e.g. Karl Marx">
+
+          <label for="description">Short Commentary / Description</label>
+          <textarea id="description" placeholder="Provide background context or commentary about this text..." rows="4"></textarea>
+
+          <label for="pdf" id="pdf-file-label">PDF File upload</label>
+          <input type="file" id="pdf" accept=".pdf">
+          <p id="pdf-edit-helper" style="font-size: 0.8rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 20px;" class="hidden">
+            Leave file blank if you do not want to replace the existing PDF file.
+          </p>
+
+          <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+            <button id="submit-btn" onclick="uploadText()" style="flex: 1;">Publish Entry</button>
+            <button id="cancel-edit-btn" class="secondary hidden" onclick="resetForm()">Cancel Edit</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Manage Texts -->
+      <div id="tab-manage" class="hidden">
+        <h2>Archive Content Management</h2>
+        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+          <input type="text" id="manage-search" placeholder="Filter texts by title, author, or language..." style="margin-bottom: 0; flex: 1;">
+          <button class="secondary" onclick="loadExistingTexts()">🔄 Refresh</button>
+        </div>
+        <div class="item-list" id="texts-list">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const REPO_OWNER = "intcomden";
+    const REPO_NAME = "internationalist-library";
+
+    // Static passwords (can be changed to any strong keys)
+    const MOD_CREDENTIALS = {
+      "moderator": "lib2026com!!",
+      "admin": "intcomden_archive#1"
+    };
+
+    let existingFiles = []; // Cache list of files
+
+    // 1. Moderator username / password login
+    function modLogin() {
+      const user = document.getElementById('mod-username').value.trim();
+      const pass = document.getElementById('mod-password').value;
+      const status = document.getElementById('login-status');
+      
+      if (MOD_CREDENTIALS[user] && MOD_CREDENTIALS[user] === pass) {
+        status.classList.add('hidden');
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('pat-screen').classList.remove('hidden');
+      } else {
+        status.innerHTML = "❌ Invalid moderator credentials";
+        status.classList.remove('hidden');
+      }
+    }
+
+    // 2. PAT connection check
+    async function connectPAT() {
+      const token = document.getElementById('pat').value.trim();
+      const status = document.getElementById('pat-status');
+      if (!token) return alert("Please enter your token");
+
+      status.innerHTML = "Authenticating with GitHub API...";
+      status.className = "status info";
+      status.classList.remove('hidden');
+
+      try {
+        // Verify token by calling GitHub API
+        const userRes = await fetch("https://api.github.com/user", {
+          headers: { 'Authorization': `token ${token}` }
+        });
+        
+        if (!userRes.ok) throw new Error("Invalid GitHub token");
+        const userData = await userRes.json();
+
+        // Check if user has push access to repo
+        const repoRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, {
+          headers: { 'Authorization': `token ${token}` }
+        });
+        if (!repoRes.ok) throw new Error("Repository access denied or not found");
+        const repoData = await repoRes.json();
+
+        if (!repoData.permissions || !repoData.permissions.push) {
+          throw new Error("You do not have write access (push permissions) to this repository.");
+        }
+
+        // Successfully authenticated
+        sessionStorage.setItem('github_pat', token);
+        status.classList.add('hidden');
+        document.getElementById('pat-screen').classList.add('hidden');
+        document.getElementById('dashboard').classList.remove('hidden');
+        
+        // Load texts list in background
+        loadExistingTexts();
+      } catch (err) {
+        status.innerHTML = `❌ Connection failed: ${err.message}`;
+        status.className = "status error";
+        status.classList.remove('hidden');
+      }
+    }
+
+    // Logout
+    function logOut() {
+      sessionStorage.removeItem('github_pat');
+      document.getElementById('dashboard').classList.add('hidden');
+      document.getElementById('pat-screen').classList.remove('hidden');
+    }
+
+    // 3. Tab Swapper
+    function switchTab(tab) {
+      if (tab === 'publish') {
+        document.getElementById('tab-publish').classList.remove('hidden');
+        document.getElementById('tab-manage').classList.add('hidden');
+        document.getElementById('tab-btn-publish').classList.add('active');
+        document.getElementById('tab-btn-manage').classList.remove('active');
+      } else {
+        document.getElementById('tab-publish').classList.add('hidden');
+        document.getElementById('tab-manage').classList.remove('hidden');
+        document.getElementById('tab-btn-publish').classList.remove('active');
+        document.getElementById('tab-btn-manage').classList.add('active');
+        loadExistingTexts();
+      }
+    }
+
+    // 4. Load & parse texts
+    async function loadExistingTexts() {
+      const token = sessionStorage.getItem('github_pat');
+      const listContainer = document.getElementById('texts-list');
+      listContainer.innerHTML = "<p style='color: var(--text-muted);'>Loading library entries...</p>";
+
+      try {
+        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_texts`, {
+          headers: { 'Authorization': `token ${token}` }
+        });
+        if (!res.ok) throw new Error("Could not fetch texts list");
+        
+        const files = await res.json();
+        existingFiles = files.filter(f => f.name.endsWith('.md'));
+        
+        listContainer.innerHTML = "";
+        if (existingFiles.length === 0) {
+          listContainer.innerHTML = "<p style='color: var(--text-muted);'>No archive texts found.</p>";
+          return;
+        }
+
+        // Load files metadata concurrently
+        const metaPromises = existingFiles.map(file => fetchFileMeta(file));
+        const items = await Promise.all(metaPromises);
+
+        // Sort items by Title
+        items.sort((a, b) => a.title.localeCompare(b.title));
+
+        renderList(items);
+
+        // Bind filter event
+        document.getElementById('manage-search').addEventListener('input', (e) => {
+          const query = e.target.value.toLowerCase().trim();
+          const filtered = items.filter(i => 
+            i.title.toLowerCase().includes(query) || 
+            (i.author && i.author.toLowerCase().includes(query)) ||
+            i.language.toLowerCase().includes(query)
+          );
+          renderList(filtered);
+        });
+
+      } catch (err) {
+        listContainer.innerHTML = `<p style='color: #f87171;'>Error loading entries: ${err.message}</p>`;
+      }
+    }
+
+    async function fetchFileMeta(file) {
+      const token = sessionStorage.getItem('github_pat');
+      const res = await fetch(file.url, {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      const data = await res.json();
+      const rawContent = decodeURIComponent(escape(atob(data.content)));
+      const parsed = parseFrontMatter(rawContent);
+
+      return {
+        filename: file.name,
+        path: file.path,
+        sha: file.sha,
+        title: parsed.attributes.title || file.name,
+        author: parsed.attributes.author || "Unknown",
+        language: parsed.attributes.language || "en",
+        pdf: parsed.attributes.pdf || "",
+        description: parsed.body.trim(),
+        content: rawContent
+      };
+    }
+
+    function parseFrontMatter(mdContent) {
+      const frontMatterRegex = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/;
+      const match = mdContent.match(frontMatterRegex);
+      if (!match) return { attributes: {}, body: mdContent };
+
+      const yamlBlock = match[1];
+      const body = match[2];
+      const attributes = {};
+      
+      yamlBlock.split('\n').forEach(line => {
+        const colonIdx = line.indexOf(':');
+        if (colonIdx > 0) {
+          const key = line.substring(0, colonIdx).trim();
+          let value = line.substring(colonIdx + 1).trim();
+          if (value.startsWith('"') && value.endsWith('"')) {
+            value = value.substring(1, value.length - 1);
+          } else if (value.startsWith("'") && value.endsWith("'")) {
+            value = value.substring(1, value.length - 1);
+          }
+          attributes[key] = value;
+        }
+      });
+
+      return { attributes, body };
+    }
+
+    function renderList(items) {
+      const listContainer = document.getElementById('texts-list');
+      listContainer.innerHTML = "";
+
+      items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        
+        let langFlag = "🇬🇧";
+        if (item.language === 'pt') langFlag = "🇧🇷";
+        if (item.language === 'es') langFlag = "🇪🇸";
+        if (item.language === 'it') langFlag = "🇮🇹";
+        if (item.language === 'nl') langFlag = "🇳🇱";
+        if (item.language === 'de') langFlag = "🇩🇪";
+        if (item.language === 'el') langFlag = "🇬🇷";
+
+        div.innerHTML = `
+          <div class="item-info">
+            <span class="item-title">${item.title}</span>
+            <span class="item-meta">${item.author} • ${langFlag} ${item.language.toUpperCase()} • ${item.pdf || 'No PDF'}</span>
+          </div>
+          <div class="item-actions">
+            <button onclick='editEntry(${JSON.stringify(item).replace(/'/g, "&apos;")})'>Edit</button>
+            <button class="danger" onclick="deleteEntry('${item.path}', '${item.sha}', '${item.title}')">Delete</button>
+          </div>
+        `;
+        listContainer.appendChild(div);
+      });
+    }
+
+    // 5. Delete functionality
+    async function deleteEntry(path, sha, title) {
+      if (!confirm(`Are you sure you want to permanently delete the entry "${title}"?`)) return;
+
+      const token = sessionStorage.getItem('github_pat');
+      showStatus(`Deleting "${title}"...`, "blue");
+
+      try {
+        const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+        const res = await fetch(url, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: `Delete text entry: ${title}`,
+            sha: sha,
+            branch: "main"
+          })
+        });
+
+        if (!res.ok) throw new Error("Could not delete from GitHub");
+
+        showStatus(`✅ Successfully deleted "${title}"`, "green");
+        loadExistingTexts();
+      } catch (err) {
+        showStatus(`❌ Delete failed: ${err.message}`, "red");
+      }
+    }
+
+    // 6. Edit entry loader
+    function editEntry(item) {
+      document.getElementById('edit-sha').value = item.sha;
+      document.getElementById('edit-path').value = item.path;
+      document.getElementById('language').value = item.language;
+      document.getElementById('title').value = item.title;
+      document.getElementById('author').value = item.author;
+      document.getElementById('description').value = item.description;
+
+      document.getElementById('form-action-title').innerText = "Edit Document Entry";
+      document.getElementById('submit-btn').innerText = "Save Changes";
+      document.getElementById('cancel-edit-btn').classList.remove('hidden');
+      document.getElementById('pdf-edit-helper').classList.remove('hidden');
+      document.getElementById('pdf-file-label').innerText = "Upload PDF File (Optional)";
+
+      switchTab('publish');
+    }
+
+    function resetForm() {
+      document.getElementById('edit-sha').value = "";
+      document.getElementById('edit-path').value = "";
+      document.getElementById('language').value = "en";
+      document.getElementById('title').value = "";
+      document.getElementById('author').value = "";
+      document.getElementById('description').value = "";
+      document.getElementById('pdf').value = "";
+
+      document.getElementById('form-action-title').innerText = "Upload New Document";
+      document.getElementById('submit-btn').innerText = "Publish Entry";
+      document.getElementById('cancel-edit-btn').classList.add('hidden');
+      document.getElementById('pdf-edit-helper').classList.add('hidden');
+      document.getElementById('pdf-file-label').innerText = "PDF File upload";
+      
+      showStatus("", "blue");
+    }
+
+    // 7. Publish & Upload Action
+    async function uploadText() {
+      const token = sessionStorage.getItem('github_pat');
+      if (!token) return showStatus("❌ Please connect with PAT first", "red");
+
+      const title = document.getElementById('title').value.trim();
+      const author = document.getElementById('author').value.trim() || "Unknown";
+      const description = document.getElementById('description').value.trim();
+      const language = document.getElementById('language').value;
+      const file = document.getElementById('pdf').files[0];
+
+      const editSha = document.getElementById('edit-sha').value;
+      const editPath = document.getElementById('edit-path').value;
+
+      if (!title) return showStatus("❌ Please specify a title", "red");
+      if (!editSha && !file) return showStatus("❌ Please select a PDF file to upload", "red");
+
+      showStatus("Publishing entry...", "blue");
+
+      try {
+        let pdfFilename = "";
+        
+        // A. If file chosen, upload PDF
+        if (file) {
+          pdfFilename = file.name.toLowerCase().replace(/[^a-z0-9.-]/g, '-');
+          const pdfBase64 = await fileToBase64(file);
+          
+          showStatus("Uploading PDF file to assets/uploads/...", "blue");
+          
+          // Check if file already exists on GitHub to obtain sha (so we don't crash)
+          let existingPdfSha = null;
+          try {
+            const pdfCheck = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/assets/uploads/${pdfFilename}`);
+            if (pdfCheck.ok) {
+              const checkData = await pdfCheck.json();
+              existingPdfSha = checkData.sha;
+            }
+          } catch(e) {}
+
+          await githubPutFile(`assets/uploads/${pdfFilename}`, pdfBase64, `Upload PDF: ${pdfFilename}`, existingPdfSha);
+        } else if (editSha) {
+          // If editing and no new file, preserve original PDF filename
+          const fileMeta = await fetchFileMeta({ url: `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${editPath}` });
+          pdfFilename = fileMeta.pdf;
+        }
+
+        // B. Generate Markdown Content
+        const mdContent = `---
+layout: text
+title: "${title}"
+author: "${author}"
+language: "${language}"
+pdf: "${pdfFilename}"
+---
+
+${description}`;
+
+        const safeSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        const finalPath = editPath || `_texts/${language}-${safeSlug}.md`;
+        
+        showStatus("Uploading Markdown document to _texts/...", "blue");
+        await githubPutFile(finalPath, btoa(unescape(encodeURIComponent(mdContent))), `Publish text: ${title}`, editSha || null);
+
+        // C. If editing changed path (e.g. language/title rename), delete old file
+        if (editPath && editPath !== finalPath) {
+          showStatus("Updating index routing (removing old version)...", "blue");
+          await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${editPath}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `token ${token}`,
+              'Accept': 'application/vnd.github.v3+json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              message: `Clean up old text path after renaming to ${finalPath}`,
+              sha: editSha,
+              branch: "main"
+            })
+          });
+        }
+
+        showStatus(`✅ Successfully published "${title}"!`, "green");
+        resetForm();
+      } catch (err) {
+        showStatus(`❌ Publish failed: ${err.message}`, "red");
+      }
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function githubPutFile(path, contentBase64, commitMessage, sha = null) {
+      const token = sessionStorage.getItem('github_pat');
+      const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+      
+      const body = {
+        message: commitMessage,
+        content: contentBase64,
+        branch: "main"
+      };
+      if (sha) body.sha = sha;
+
+      const res = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${token}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || "Failed to commit file to GitHub");
+      }
+    }
+
+    function showStatus(msg, color) {
+      const status = document.getElementById('status');
+      status.classList.remove('hidden');
+      status.innerHTML = msg;
+
+      if (color === "green") {
+        status.className = "status success";
+      } else if (color === "red") {
+        status.className = "status error";
+      } else {
+        status.className = "status info";
+      }
+    }
+  </script>
+</body>
+</html>

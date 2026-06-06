@@ -1,0 +1,23 @@
+title: Internationalist Communist Library
+description: Official shared library for the Internationalist Communist Discord server
+
+baseurl: "/internationalist-library"
+url: "https://intcomden.github.io"
+
+collections:
+  texts:
+    output: true
+    # Removed the problematic permalink line to stop the error
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: "default"
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - .gitignore
+  - .nojekyll

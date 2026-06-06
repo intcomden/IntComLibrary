@@ -1,0 +1,77 @@
+---
+layout: default
+title: Biblioteca Comunista Internacionalista
+language: pt
+---
+
+<div style="margin-bottom: 2.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
+  <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem; font-family: var(--font-serif);">☭ Arquivo Teórico</h2>
+  <p style="color: var(--text-muted); font-size: 1rem;">
+    Acesse textos teóricos essenciais, teses e manifestos históricos das tradições comunista de esquerda, internacionalista e conselhista.
+  </p>
+</div>
+
+<!-- Search Input -->
+<div class="search-container" style="margin-bottom: 2.5rem;">
+  <span class="search-icon">🔍</span>
+  <input type="text" class="search-input" id="search-input" placeholder="Pesquisar arquivo por título, autor ou palavras-chave...">
+</div>
+
+<!-- Texts Grid -->
+<div class="cards-grid" id="cards-grid">
+  {% assign lang_texts = site.texts | where: "language", "pt" | sort: "title" %}
+  {% for text in lang_texts %}
+    <div class="text-card" data-title="{{ text.title | downcase }}" data-author="{% if text.author %}{{ text.author | downcase }}{% endif %}" data-desc="{% if text.description %}{{ text.description | downcase }}{% endif %}">
+      <div class="card-header">
+        <h3 class="card-title" style="font-family: var(--font-serif);">
+          <a href="{{ site.baseurl }}{{ text.url }}">{{ text.title }}</a>
+        </h3>
+      </div>
+      
+      {% if text.author %}
+        <span class="card-author">{{ text.author }}</span>
+      {% endif %}
+      
+      {% if text.description %}
+        <p class="card-description">{{ text.description }}</p>
+      {% endif %}
+      
+      <div class="card-footer">
+        <span class="card-meta-tag">🇧🇷 Português</span>
+        <a href="{{ site.baseurl }}{{ text.url }}" style="font-weight: 600; font-size: 0.85rem; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 0.25rem;">
+          LER TEXTO <span style="font-size: 1.1rem; line-height: 1;">→</span>
+        </a>
+      </div>
+    </div>
+  {% else %}
+    <div style="grid-column: 1 / -1; padding: 3rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius); text-align: center;">
+      <p style="color: var(--text-muted);">Nenhum texto disponível em português ainda.</p>
+    </div>
+  {% endfor %}
+</div>
+
+<!-- Client-side filter script -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('search-input');
+    const cards = document.querySelectorAll('.text-card');
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        
+        cards.forEach(card => {
+          const title = card.getAttribute('data-title') || '';
+          const author = card.getAttribute('data-author') || '';
+          const desc = card.getAttribute('data-desc') || '';
+
+          if (title.includes(query) || author.includes(query) || desc.includes(query)) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    }
+  });
+</script>
