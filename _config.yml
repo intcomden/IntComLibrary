@@ -1,7 +1,7 @@
 title: Internationalist Communist Library
 description: Official shared library for the Internationalist Communist Discord server
 
-baseurl: "/internationalist-library"
+baseurl: "/IntComLibrary"
 url: "https://intcomden.github.io"
 
 collections:

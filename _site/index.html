@@ -1,3 +1,7 @@
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,34 +9,497 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Internationalist Communist Library • Internationalist Communist Library</title>
   
-  <link rel="icon" type="image/png" href="/internationalist-library/favicon.png">
+  <link rel="icon" type="image/png" href="favicon.png">
 
-  <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="/internationalist-library/assets/css/style.css">
+  <!-- Inline compiled stylesheet for fail-safe rendering and offline file:// support -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap');
+
+:root {
+  --bg-primary: #0a0b0d;
+  --bg-secondary: #111317;
+  --bg-tertiary: #171a21;
+  --accent-red: #e63939;
+  --accent-red-hover: #ff4d4d;
+  --accent-gold: #e5c158;
+  --text-main: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --border-color: rgba(255, 255, 255, 0.05);
+  --border-color-focus: rgba(230, 57, 57, 0.3);
+  --font-display: 'Cinzel', serif;
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: 'Lora', serif;
+  --border-radius: 6px;
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Global Reset & Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-red);
+}
+
+/* Header Component */
+.header {
+  background: #14161c;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  border-bottom: 2px solid var(--accent-red);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--accent-red);
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.logo-link:hover {
+  color: var(--accent-red-hover);
+}
+
+.logo-img {
+  height: 38px;
+  width: 38px;
+}
+
+/* Language Navigation */
+.lang-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.lang-link {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  padding: 2px 6px;
+  border-radius: 3px;
+  transition: var(--transition);
+}
+
+.lang-link:hover {
+  color: var(--accent-red-hover);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.lang-link.active {
+  color: var(--accent-gold);
+  font-weight: 700;
+}
+
+.lang-sep {
+  color: rgba(255, 255, 255, 0.08);
+  font-size: 0.85rem;
+}
+
+/* Main Layout Grid */
+.container {
+  max-width: 1000px;
+  width: 100%;
+  margin: 2.5rem auto;
+  padding: 0 1.5rem;
+  flex: 1;
+}
+
+/* Titles */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  color: var(--accent-red);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+/* Search Bar */
+.search-container {
+  position: relative;
+  width: 100%;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.8rem 1.2rem 0.8rem 2.8rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-main);
+  font-size: 0.95rem;
+  font-family: var(--font-sans);
+  transition: var(--transition);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--border-color-focus);
+  box-shadow: 0 0 0 3px rgba(230, 57, 57, 0.08);
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-dim);
+  pointer-events: none;
+  font-size: 0.95rem;
+}
+
+/* Text Cards Grid */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.text-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  position: relative;
+  transition: var(--transition);
+}
+
+.text-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--accent-red);
+  border-radius: var(--border-radius) 0 0 var(--border-radius);
+}
+
+.text-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-color-focus);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+.card-title a {
+  color: var(--text-main);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.card-title a:hover {
+  color: var(--accent-red);
+}
+
+.card-author {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.card-description {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.6;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 0.8rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.card-meta-tag {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.card-footer a {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent-red);
+  text-decoration: none;
+  letter-spacing: 0.03em;
+}
+
+.card-footer a:hover {
+  color: var(--accent-red-hover);
+}
+
+/* Scholarly Text Reader Layout */
+.reader-container {
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+}
+
+.reader-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.reader-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sidebar-widget {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1.25rem;
+}
+
+.sidebar-widget-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-gold);
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.4rem;
+}
+
+.metadata-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.metadata-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.metadata-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  letter-spacing: 0.03em;
+}
+
+.metadata-value {
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+.pdf-viewer-frame {
+  width: 100%;
+  height: 70vh;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: #14161a;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: var(--border-radius);
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.btn-primary {
+  background: var(--accent-red);
+  color: #ffffff !important;
+}
+.btn-primary:hover {
+  background: var(--accent-red-hover);
+}
+
+.btn-secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-main) !important;
+  border: 1px solid var(--border-color);
+}
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.btn-block {
+  display: flex;
+  width: 100%;
+}
+
+/* Admin Dashboard Panel Styling */
+.admin-nav {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+  gap: 0.5rem;
+}
+
+.nav-tab {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.nav-tab.active {
+  color: var(--accent-gold);
+  border-bottom-color: var(--accent-gold);
+}
+
+.item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.list-item {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 900px) {
+  .reader-container {
+    flex-direction: column-reverse;
+  }
+  .reader-sidebar {
+    width: 100%;
+  }
+}
+
+  </style>
 </head>
 <body>
   <header class="header">
     <div class="logo">
-      <a href="/internationalist-library/" class="logo-link">
-        <img src="/internationalist-library/assets/logo.svg" alt="☭" class="logo-img">
+      <a href="index.html" class="logo-link">
+        <svg viewBox="0 0 100 100" class="logo-img" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Red Book Outer Border -->
+          <path d="M12 77C22 77 36 67 50 67C64 67 78 77 88 77V23C78 23 64 13 50 13C36 13 22 23 12 23V77Z" fill="#d63031" stroke="#ff4d4d" stroke-width="2" stroke-linejoin="round"/>
+          <!-- Book Spine Divider -->
+          <path d="M50 13V67" stroke="#13151c" stroke-width="3" stroke-linecap="round"/>
+          
+          <!-- Pages inner cream color for high readability / contrast -->
+          <path d="M15 74C24 74 37 65 48 65V21C37 21 24 30 15 30V74Z" fill="#fcfaf2"/>
+          <path d="M85 74C76 74 63 65 52 65V21C63 21 76 30 85 30V74Z" fill="#fcfaf2"/>
+
+          <!-- Hammer and Sickle (Gold with dark outline) -->
+          <g transform="translate(50, 43) scale(0.65)" style="transform-origin: center;">
+            <!-- Sickle Blade -->
+            <path d="M 12,-16 C -2,-19 -18,-11 -20,2 C -22,12 -13,24 -2,26 C 6,28 11,23 14,16 C 8,19 0,16 -3,10 C -6,4 -3,-3 3,-6 C 7,-8 10,-8 12,-16 Z" fill="#e5c158" stroke="#13151c" stroke-width="2" stroke-linejoin="round"/>
+            <!-- Hammer Handle -->
+            <path d="M -15,16 L 15,-14" stroke="#e5c158" stroke-width="4" stroke-linecap="round"/>
+            <!-- Hammer Head -->
+            <path d="M 6,-18 L 18,-6 L 14,-2 L 2,-14 Z" fill="#e5c158" stroke="#13151c" stroke-width="2" stroke-linejoin="round"/>
+          </g>
+        </svg>
         <span>Internationalist Communist Library</span>
       </a>
     </div>
     <div class="nav-container">
       <nav class="lang-nav" aria-label="Language selector">
-  <a href="/internationalist-library/" class="lang-link active">English</a>
+  <a href="index.html" class="lang-link active">English</a>
   <span class="lang-sep">|</span>
-  <a href="/internationalist-library/pt/" class="lang-link ">Português</a>
+  <a href="pt/index.html" class="lang-link ">Português</a>
   <span class="lang-sep">|</span>
-  <a href="/internationalist-library/es/" class="lang-link ">Español</a>
+  <a href="es/index.html" class="lang-link ">Español</a>
   <span class="lang-sep">|</span>
-  <a href="/internationalist-library/it/" class="lang-link ">Italiano</a>
+  <a href="it/index.html" class="lang-link ">Italiano</a>
   <span class="lang-sep">|</span>
-  <a href="/internationalist-library/nl/" class="lang-link ">Nederlands</a>
+  <a href="nl/index.html" class="lang-link ">Nederlands</a>
   <span class="lang-sep">|</span>
-  <a href="/internationalist-library/de/" class="lang-link ">Deutsch</a>
+  <a href="de/index.html" class="lang-link ">Deutsch</a>
   <span class="lang-sep">|</span>
-  <a href="/internationalist-library/el/" class="lang-link ">Ελληνικά</a>
+  <a href="el/index.html" class="lang-link ">Ελληνικά</a>
 </nav>
 
     </div>
@@ -56,8 +523,27 @@
 <div class="cards-grid" id="cards-grid">
   
   
-    <div style="grid-column: 1 / -1; padding: 3rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius); text-align: center;">
-      <p style="color: var(--text-muted);">No texts available in English yet.</p>
+    <div class="text-card" data-title="test document" data-author="test author" data-desc="this is a test description for the internationalist communist library.">
+      <div class="card-header">
+        <h3 class="card-title" style="font-family: var(--font-serif);">
+          <a href="texts/test.html">Test Document</a>
+        </h3>
+      </div>
+      
+      
+        <span class="card-author">Test Author</span>
+      
+      
+      
+        <p class="card-description">This is a test description for the Internationalist Communist Library.</p>
+      
+      
+      <div class="card-footer">
+        <span class="card-meta-tag">🇬🇧 English</span>
+        <a href="texts/test.html" style="font-weight: 600; font-size: 0.85rem; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 0.25rem;">
+          READ TEXT <span style="font-size: 1.1rem; line-height: 1;">→</span>
+        </a>
+      </div>
     </div>
   
 </div>

@@ -24,7 +24,7 @@ language: nl
     <div class="text-card" data-title="{{ text.title | downcase }}" data-author="{% if text.author %}{{ text.author | downcase }}{% endif %}" data-desc="{% if text.description %}{{ text.description | downcase }}{% endif %}">
       <div class="card-header">
         <h3 class="card-title" style="font-family: var(--font-serif);">
-          <a href="{{ site.baseurl }}{{ text.url }}">{{ text.title }}</a>
+          <a href="{{ relative_prefix }}{{ text.url | remove_first: '/' }}">{{ text.title }}</a>
         </h3>
       </div>
       
@@ -38,7 +38,7 @@ language: nl
       
       <div class="card-footer">
         <span class="card-meta-tag">🇳🇱 Nederlands</span>
-        <a href="{{ site.baseurl }}{{ text.url }}" style="font-weight: 600; font-size: 0.85rem; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 0.25rem;">
+        <a href="{{ relative_prefix }}{{ text.url | remove_first: '/' }}" style="font-weight: 600; font-size: 0.85rem; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 0.25rem;">
           LEES TEKST <span style="font-size: 1.1rem; line-height: 1;">→</span>
         </a>
       </div>

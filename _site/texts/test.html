@@ -3,11 +3,11 @@
 
 
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Biblioteca Comunista Internazionalista • Internationalist Communist Library</title>
+  <title>Test Document • Internationalist Communist Library</title>
   
   <link rel="icon" type="image/png" href="../favicon.png">
 
@@ -487,13 +487,13 @@ h1, h2, h3 {
     </div>
     <div class="nav-container">
       <nav class="lang-nav" aria-label="Language selector">
-  <a href="../index.html" class="lang-link ">English</a>
+  <a href="../index.html" class="lang-link active">English</a>
   <span class="lang-sep">|</span>
   <a href="../pt/index.html" class="lang-link ">Português</a>
   <span class="lang-sep">|</span>
   <a href="../es/index.html" class="lang-link ">Español</a>
   <span class="lang-sep">|</span>
-  <a href="../it/index.html" class="lang-link active">Italiano</a>
+  <a href="../it/index.html" class="lang-link ">Italiano</a>
   <span class="lang-sep">|</span>
   <a href="../nl/index.html" class="lang-link ">Nederlands</a>
   <span class="lang-sep">|</span>
@@ -506,54 +506,100 @@ h1, h2, h3 {
   </header>
 
   <main class="container">
-    <div style="margin-bottom: 2.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
-  <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem; font-family: var(--font-serif);">☭ Archivio Teorico</h2>
-  <p style="color: var(--text-muted); font-size: 1rem;">
-    Accedi a testi teorici fondamentali, tesi e manifesti storici della sinistra comunista, internazionalista e consiliarista.
-  </p>
-</div>
+    
 
-<!-- Search Input -->
-<div class="search-container" style="margin-bottom: 2.5rem;">
-  <span class="search-icon">🔍</span>
-  <input type="text" class="search-input" id="search-input" placeholder="Cerca nell'archivio per titolo, autore o parole chiave...">
-</div>
 
-<!-- Texts Grid -->
-<div class="cards-grid" id="cards-grid">
-  
-  
-    <div style="grid-column: 1 / -1; padding: 3rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius); text-align: center;">
-      <p style="color: var(--text-muted);">Nessun testo disponibile in italiano ancora.</p>
-    </div>
-  
-</div>
 
-<!-- Client-side filter script -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('search-input');
-    const cards = document.querySelectorAll('.text-card');
 
-    if (searchInput) {
-      searchInput.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase().trim();
+
+
+<div class="reader-container">
+  <!-- Main content area (Viewer + Info) -->
+  <div class="reader-main">
+    <nav class="language-nav" style="justify-content: flex-start; margin-bottom: 1rem;">
+      <a href="../index.html" style="font-weight: 500; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
+        ← Back to Library
+      </a>
+    </nav>
+
+    <header style="margin-bottom: 2rem;">
+      <h1 style="font-size: 2.2rem; line-height: 1.2; margin-bottom: 0.5rem; font-family: var(--font-serif);">Test Document</h1>
+      
+        <p style="font-family: var(--font-display); color: var(--accent-gold); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.05em;">
+          Test Author
+        </p>
+      
+    </header>
+
+    
+      <!-- Mozilla PDF.js Embedded Web Viewer -->
+      <div style="position: relative;">
+        <iframe 
+          src="https://mozilla.github.io/pdf.js/web/viewer.html?file=https%3A%2F%2Fintcomden.github.io%2FIntComLibrary%2Fassets%2Fuploads%2Ftest.pdf" 
+          class="pdf-viewer-frame"
+          allowfullscreen>
+        </iframe>
+      </div>
+    
+
+    <!-- Text Description / Commentary (Rendered underneath PDF) -->
+    <section class="sidebar-widget" style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 2rem; margin-top: 1.5rem;">
+      <h2 style="font-size: 1.25rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-gold); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+        About this Text
+      </h2>
+      <div style="font-family: var(--font-serif); font-size: 1.05rem; line-height: 1.8; color: var(--text-main);">
+        <p>This is the test document content body. Here you can write theoretical text, commentary, or descriptions.</p>
+
+      </div>
+    </section>
+  </div>
+
+  <!-- Sidebar widget area (Metadata + Download Actions) -->
+  <aside class="reader-sidebar">
+    <div class="sidebar-widget">
+      <h3 class="sidebar-widget-title">Document Details</h3>
+      <div class="metadata-list">
+        <div class="metadata-item">
+          <span class="metadata-label">Title</span>
+          <span class="metadata-value" style="font-weight: 600;">Test Document</span>
+        </div>
         
-        cards.forEach(card => {
-          const title = card.getAttribute('data-title') || '';
-          const author = card.getAttribute('data-author') || '';
-          const desc = card.getAttribute('data-desc') || '';
+        
+          <div class="metadata-item">
+            <span class="metadata-label">Author</span>
+            <span class="metadata-value">Test Author</span>
+          </div>
+        
 
-          if (title.includes(query) || author.includes(query) || desc.includes(query)) {
-            card.style.display = 'flex';
-          } else {
-            card.style.display = 'none';
-          }
-        });
-      });
-    }
-  });
-</script>
+        <div class="metadata-item">
+          <span class="metadata-label">Language</span>
+          <span class="metadata-value" style="display: flex; align-items: center; gap: 0.4rem;">
+            🇬🇧 English
+          </span>
+        </div>
+
+        <div class="metadata-item">
+          <span class="metadata-label">Format</span>
+          <span class="metadata-value" style="font-family: monospace; font-size: 0.85rem;">PDF Document (.pdf)</span>
+        </div>
+      </div>
+    </div>
+
+    
+      <div class="sidebar-widget" style="border-color: rgba(214, 48, 49, 0.3);">
+        <h3 class="sidebar-widget-title" style="color: var(--accent-red);">Actions</h3>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <a href="../assets/uploads/test.pdf" download class="btn btn-primary btn-block">
+            📥 Download PDF
+          </a>
+          <a href="../assets/uploads/test.pdf" target="_blank" class="btn btn-secondary btn-block">
+            🔗 Full Screen
+          </a>
+        </div>
+      </div>
+    
+  </aside>
+</div>
 
   </main>
 </body>

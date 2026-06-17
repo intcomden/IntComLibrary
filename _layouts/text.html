@@ -2,10 +2,17 @@
 layout: default
 ---
 
+{% assign url_parts = page.url | split: '/' %}
+{% assign relative_prefix = "" %}
+{% assign first_segment = url_parts[1] %}
+{% if first_segment == "pt" or first_segment == "es" or first_segment == "it" or first_segment == "nl" or first_segment == "de" or first_segment == "el" or first_segment == "texts" or first_segment == "sections" or first_segment == "admin" %}
+  {% assign relative_prefix = "../" %}
+{% endif %}
+
 {% case page.language %}
   {% when 'pt' %}
     {% assign back_text = '← Voltar para a Biblioteca' %}
-    {% assign back_url = '/pt/' %}
+    {% assign back_url = 'pt/index.html' %}
     {% assign doc_info_title = 'Detalhes do Texto' %}
     {% assign title_label = 'Título' %}
     {% assign author_label = 'Autor' %}
@@ -18,7 +25,7 @@ layout: default
     {% assign lang_name = 'Português (BR)' %}
   {% when 'es' %}
     {% assign back_text = '← Volver a la Biblioteca' %}
-    {% assign back_url = '/es/' %}
+    {% assign back_url = 'es/index.html' %}
     {% assign doc_info_title = 'Detalles del Texto' %}
     {% assign title_label = 'Título' %}
     {% assign author_label = 'Autor' %}
@@ -31,7 +38,7 @@ layout: default
     {% assign lang_name = 'Español' %}
   {% when 'it' %}
     {% assign back_text = '← Torna alla Biblioteca' %}
-    {% assign back_url = '/it/' %}
+    {% assign back_url = 'it/index.html' %}
     {% assign doc_info_title = 'Dettagli del Testo' %}
     {% assign title_label = 'Titolo' %}
     {% assign author_label = 'Autore' %}
@@ -44,7 +51,7 @@ layout: default
     {% assign lang_name = 'Italiano' %}
   {% when 'nl' %}
     {% assign back_text = '← Terug naar de Bibliotheek' %}
-    {% assign back_url = '/nl/' %}
+    {% assign back_url = 'nl/index.html' %}
     {% assign doc_info_title = 'Document Details' %}
     {% assign title_label = 'Titel' %}
     {% assign author_label = 'Auteur' %}
@@ -57,7 +64,7 @@ layout: default
     {% assign lang_name = 'Nederlands' %}
   {% when 'de' %}
     {% assign back_text = '← Zurück zur Bibliothek' %}
-    {% assign back_url = '/de/' %}
+    {% assign back_url = 'de/index.html' %}
     {% assign doc_info_title = 'Textdetails' %}
     {% assign title_label = 'Titel' %}
     {% assign author_label = 'Autor' %}
@@ -70,7 +77,7 @@ layout: default
     {% assign lang_name = 'Deutsch' %}
   {% when 'el' %}
     {% assign back_text = '← Επιστροφή στη Βιβλιοθήκη' %}
-    {% assign back_url = '/el/' %}
+    {% assign back_url = 'el/index.html' %}
     {% assign doc_info_title = 'Λεπτομέρειες Κειμένου' %}
     {% assign title_label = 'Τίτλος' %}
     {% assign author_label = 'Συγγραφέας' %}
@@ -83,7 +90,7 @@ layout: default
     {% assign lang_name = 'Ελληνικά' %}
   {% else %}
     {% assign back_text = '← Back to Library' %}
-    {% assign back_url = '/' %}
+    {% assign back_url = 'index.html' %}
     {% assign doc_info_title = 'Document Details' %}
     {% assign title_label = 'Title' %}
     {% assign author_label = 'Author' %}
@@ -100,7 +107,7 @@ layout: default
   <!-- Main content area (Viewer + Info) -->
   <div class="reader-main">
     <nav class="language-nav" style="justify-content: flex-start; margin-bottom: 1rem;">
-      <a href="{{ site.baseurl }}{{ back_url }}" style="font-weight: 500; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
+      <a href="{{ relative_prefix }}{{ back_url }}" style="font-weight: 500; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
         {{ back_text }}
       </a>
     </nav>
@@ -118,7 +125,7 @@ layout: default
       <!-- Mozilla PDF.js Embedded Web Viewer -->
       <div style="position: relative;">
         <iframe 
-          src="https://mozilla.github.io/pdf.js/web/viewer.html?file={{ site.baseurl | append: '/assets/uploads/' | append: page.pdf | url_encode }}" 
+          src="https://mozilla.github.io/pdf.js/web/viewer.html?file={{ site.url | append: site.baseurl | append: '/assets/uploads/' | append: page.pdf | url_encode }}" 
           class="pdf-viewer-frame"
           allowfullscreen>
         </iframe>
@@ -176,10 +183,10 @@ layout: default
       <div class="sidebar-widget" style="border-color: rgba(214, 48, 49, 0.3);">
         <h3 class="sidebar-widget-title" style="color: var(--accent-red);">Actions</h3>
         <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-          <a href="{{ site.baseurl }}/assets/uploads/{{ page.pdf }}" download class="btn btn-primary btn-block">
+          <a href="{{ relative_prefix }}assets/uploads/{{ page.pdf }}" download class="btn btn-primary btn-block">
             📥 {{ download_text }}
           </a>
-          <a href="{{ site.baseurl }}/assets/uploads/{{ page.pdf }}" target="_blank" class="btn btn-secondary btn-block">
+          <a href="{{ relative_prefix }}assets/uploads/{{ page.pdf }}" target="_blank" class="btn btn-secondary btn-block">
             🔗 {{ view_full_text }}
           </a>
         </div>
