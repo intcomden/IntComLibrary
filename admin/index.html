@@ -261,6 +261,7 @@
       <div class="admin-nav">
         <button class="nav-tab active" id="tab-btn-publish" onclick="switchTab('publish')">📤 Publish Text</button>
         <button class="nav-tab" id="tab-btn-manage" onclick="switchTab('manage')">📁 Manage Texts</button>
+        <button class="nav-tab" id="tab-btn-sections" onclick="switchTab('sections')">📂 Manage Sections</button>
       </div>
 
       <!-- Tab 1: Publish Form -->
@@ -314,6 +315,58 @@
           <!-- Dynamically populated -->
         </div>
       </div>
+
+      <!-- Tab 3: Manage Sections -->
+      <div id="tab-sections" class="hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+          <h2>Archive Sections</h2>
+          <button onclick="createNewSection()">➕ Create New Section</button>
+        </div>
+        
+        <!-- Section Form Container (initially hidden) -->
+        <div id="section-form-container" class="hidden" style="background: var(--bg-primary); border: 1px solid var(--border-color); padding: 20px; border-radius: 4px; margin-bottom: 2rem;">
+          <h3 id="section-form-title">Create New Section</h3>
+          
+          <input type="hidden" id="edit-section-sha">
+          <input type="hidden" id="edit-section-path">
+          
+          <label for="section-language">Language</label>
+          <select id="section-language">
+            <option value="en">English</option>
+            <option value="pt">Português</option>
+            <option value="es">Español</option>
+            <option value="it">Italiano</option>
+            <option value="nl">Nederlands</option>
+            <option value="de">Deutsch</option>
+            <option value="el">Ελληνικά</option>
+          </select>
+          
+          <label for="section-title">Section Title</label>
+          <input type="text" id="section-title" placeholder="e.g. Critique of Political Economy">
+          
+          <label for="section-slug">Slug (URL identifier)</label>
+          <input type="text" id="section-slug" placeholder="e.g. critique-political-economy">
+          
+          <label for="section-order">Display Order</label>
+          <input type="number" id="section-order" value="10" placeholder="e.g. 10">
+          
+          <label for="section-content">Section Texts List (Markdown list of texts/audiobooks)</label>
+          <textarea id="section-content" placeholder="- Book Title - Author + Link..." rows="6"></textarea>
+          
+          <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+            <button id="section-submit-btn" onclick="saveSection()">Save Section</button>
+            <button class="secondary" onclick="resetSectionForm()">Cancel</button>
+          </div>
+        </div>
+
+        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+          <input type="text" id="sections-search" placeholder="Filter sections by title or language..." style="margin-bottom: 0; flex: 1;">
+          <button class="secondary" onclick="loadExistingSections()">🔄 Refresh</button>
+        </div>
+        <div class="item-list" id="sections-list">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
     </div>
   </div>
 
@@ -328,6 +381,7 @@
     };
 
     let existingFiles = []; // Cache list of files
+    let existingSections = []; // Cache list of sections
 
     // 1. Moderator username / password login
     function modLogin() {
@@ -399,17 +453,25 @@
 
     // 3. Tab Swapper
     function switchTab(tab) {
+      document.getElementById('tab-publish').classList.add('hidden');
+      document.getElementById('tab-manage').classList.add('hidden');
+      document.getElementById('tab-sections').classList.add('hidden');
+      
+      document.getElementById('tab-btn-publish').classList.remove('active');
+      document.getElementById('tab-btn-manage').classList.remove('active');
+      document.getElementById('tab-btn-sections').classList.remove('active');
+      
       if (tab === 'publish') {
         document.getElementById('tab-publish').classList.remove('hidden');
-        document.getElementById('tab-manage').classList.add('hidden');
         document.getElementById('tab-btn-publish').classList.add('active');
-        document.getElementById('tab-btn-manage').classList.remove('active');
-      } else {
-        document.getElementById('tab-publish').classList.add('hidden');
+      } else if (tab === 'manage') {
         document.getElementById('tab-manage').classList.remove('hidden');
-        document.getElementById('tab-btn-publish').classList.remove('active');
         document.getElementById('tab-btn-manage').classList.add('active');
         loadExistingTexts();
+      } else if (tab === 'sections') {
+        document.getElementById('tab-sections').classList.remove('hidden');
+        document.getElementById('tab-btn-sections').classList.add('active');
+        loadExistingSections();
       }
     }
 
@@ -444,19 +506,22 @@
         renderList(items);
 
         // Bind filter event
-        document.getElementById('manage-search').addEventListener('input', (e) => {
-          const query = e.target.value.toLowerCase().trim();
-          const filtered = items.filter(i => 
-            i.title.toLowerCase().includes(query) || 
-            (i.author && i.author.toLowerCase().includes(query)) ||
-            i.language.toLowerCase().includes(query)
-          );
-          renderList(filtered);
-        });
+        document.getElementById('manage-search').removeEventListener('input', filterTextsHandler);
+        document.getElementById('manage-search').addEventListener('input', (e) => filterTextsHandler(e, items));
 
       } catch (err) {
         listContainer.innerHTML = `<p style='color: #f87171;'>Error loading entries: ${err.message}</p>`;
       }
+    }
+
+    function filterTextsHandler(e, items) {
+      const query = e.target.value.toLowerCase().trim();
+      const filtered = items.filter(i => 
+        i.title.toLowerCase().includes(query) || 
+        (i.author && i.author.toLowerCase().includes(query)) ||
+        i.language.toLowerCase().includes(query)
+      );
+      renderList(filtered);
     }
 
     async function fetchFileMeta(file) {
@@ -562,7 +627,7 @@
 
         if (!res.ok) throw new Error("Could not delete from GitHub");
 
-        showStatus(`✅ Successfully deleted "${title}"`, "green");
+        showStatus(`... Successfully deleted "${title}"`, "green");
         loadExistingTexts();
       } catch (err) {
         showStatus(`❌ Delete failed: ${err.message}`, "red");
@@ -740,6 +805,233 @@ ${description}`;
         status.className = "status error";
       } else {
         status.className = "status info";
+      }
+    }
+
+    // 8. Load & parse sections
+    async function loadExistingSections() {
+      const token = sessionStorage.getItem('github_pat');
+      const listContainer = document.getElementById('sections-list');
+      listContainer.innerHTML = "<p style='color: var(--text-muted);'>Loading sections...</p>";
+
+      try {
+        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/sections`, {
+          headers: { 'Authorization': `token ${token}` }
+        });
+        if (!res.ok) throw new Error("Could not fetch sections list");
+        
+        const files = await res.json();
+        existingSections = files.filter(f => f.name.endsWith('.md'));
+        
+        listContainer.innerHTML = "";
+        if (existingSections.length === 0) {
+          listContainer.innerHTML = "<p style='color: var(--text-muted);'>No sections found.</p>";
+          return;
+        }
+
+        const metaPromises = existingSections.map(file => fetchSectionMeta(file));
+        const items = await Promise.all(metaPromises);
+
+        // Sort items by Order then by Title
+        items.sort((a, b) => {
+          const orderA = parseInt(a.order) || 100;
+          const orderB = parseInt(b.order) || 100;
+          if (orderA !== orderB) return orderA - orderB;
+          return a.title.localeCompare(b.title);
+        });
+
+        renderSectionsList(items);
+
+        // Bind filter event
+        document.getElementById('sections-search').removeEventListener('input', filterSectionsHandler);
+        document.getElementById('sections-search').addEventListener('input', (e) => filterSectionsHandler(e, items));
+
+      } catch (err) {
+        listContainer.innerHTML = `<p style='color: #f87171;'>Error loading sections: ${err.message}</p>`;
+      }
+    }
+
+    function filterSectionsHandler(e, items) {
+      const query = e.target.value.toLowerCase().trim();
+      const filtered = items.filter(i => 
+        i.title.toLowerCase().includes(query) || 
+        i.language.toLowerCase().includes(query)
+      );
+      renderSectionsList(filtered);
+    }
+
+    async function fetchSectionMeta(file) {
+      const token = sessionStorage.getItem('github_pat');
+      const res = await fetch(file.url, {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      const data = await res.json();
+      const rawContent = decodeURIComponent(escape(atob(data.content)));
+      const parsed = parseFrontMatter(rawContent);
+
+      return {
+        filename: file.name,
+        path: file.path,
+        sha: file.sha,
+        title: parsed.attributes.title || file.name,
+        language: parsed.attributes.language || "en",
+        slug: parsed.attributes.slug || "",
+        order: parsed.attributes.order || "10",
+        content: parsed.body.trim(),
+        rawContent: rawContent
+      };
+    }
+
+    function renderSectionsList(items) {
+      const listContainer = document.getElementById('sections-list');
+      listContainer.innerHTML = "";
+
+      items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        
+        let langFlag = "🇬🇧";
+        if (item.language === 'pt') langFlag = "🇧🇷";
+        if (item.language === 'es') langFlag = "🇪🇸";
+        if (item.language === 'it') langFlag = "🇮🇹";
+        if (item.language === 'nl') langFlag = "🇳🇱";
+        if (item.language === 'de') langFlag = "🇩🇪";
+        if (item.language === 'el') langFlag = "🇬🇷";
+
+        div.innerHTML = `
+          <div class="item-info">
+            <span class="item-title">${item.title}</span>
+            <span class="item-meta">${langFlag} ${item.language.toUpperCase()} • Slug: ${item.slug} • Order: ${item.order}</span>
+          </div>
+          <div class="item-actions">
+            <button onclick='editSection(${JSON.stringify(item).replace(/'/g, "&apos;")})'>Edit</button>
+            <button class="danger" onclick="deleteSection('${item.path}', '${item.sha}', '${item.title}')">Delete</button>
+          </div>
+        `;
+        listContainer.appendChild(div);
+      });
+    }
+
+    // 9. Section CRUD Actions
+    function createNewSection() {
+      resetSectionForm();
+      document.getElementById('section-form-container').classList.remove('hidden');
+      document.getElementById('section-form-title').innerText = "Create New Section";
+    }
+
+    function resetSectionForm() {
+      document.getElementById('edit-section-sha').value = "";
+      document.getElementById('edit-section-path').value = "";
+      document.getElementById('section-language').value = "en";
+      document.getElementById('section-title').value = "";
+      document.getElementById('section-slug').value = "";
+      document.getElementById('section-order').value = "10";
+      document.getElementById('section-content').value = "";
+      document.getElementById('section-form-container').classList.add('hidden');
+    }
+
+    function editSection(item) {
+      document.getElementById('edit-section-sha').value = item.sha;
+      document.getElementById('edit-section-path').value = item.path;
+      document.getElementById('section-language').value = item.language;
+      document.getElementById('section-title').value = item.title;
+      document.getElementById('section-slug').value = item.slug;
+      document.getElementById('section-order').value = item.order;
+      document.getElementById('section-content').value = item.content;
+
+      document.getElementById('section-form-container').classList.remove('hidden');
+      document.getElementById('section-form-title').innerText = "Edit Section";
+      document.getElementById('section-form-container').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function saveSection() {
+      const token = sessionStorage.getItem('github_pat');
+      if (!token) return showStatus("❌ Please connect with PAT first", "red");
+
+      const title = document.getElementById('section-title').value.trim();
+      const language = document.getElementById('section-language').value;
+      const slug = document.getElementById('section-slug').value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const order = document.getElementById('section-order').value || "10";
+      const content = document.getElementById('section-content').value.trim();
+
+      const editSha = document.getElementById('edit-section-sha').value;
+      const editPath = document.getElementById('edit-section-path').value;
+
+      if (!title) return alert("Please specify a section title");
+      if (!slug) return alert("Please specify a slug");
+
+      showStatus("Saving section...", "blue");
+
+      try {
+        // Generate markdown content with YAML front matter
+        const mdContent = `---
+title: "${title}"
+language: "${language}"
+order: ${order}
+slug: "${slug}"
+---
+
+${content}`;
+
+        const finalPath = `sections/${language}-${slug}.md`;
+
+        showStatus("Uploading Section file to sections/...", "blue");
+        await githubPutFile(finalPath, btoa(unescape(encodeURIComponent(mdContent))), `Save section: ${title}`, editSha || null);
+
+        // Delete old path if we renamed the section or changed its language
+        if (editPath && editPath !== finalPath) {
+          showStatus("Removing old section location...", "blue");
+          await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${editPath}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `token ${token}`,
+              'Accept': 'application/vnd.github.v3+json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              message: `Clean up old section path after renaming to ${finalPath}`,
+              sha: editSha,
+              branch: "main"
+            })
+          });
+        }
+
+        showStatus(`✅ Successfully saved section "${title}"!`, "green");
+        resetSectionForm();
+        loadExistingSections();
+      } catch (err) {
+        showStatus(`❌ Save failed: ${err.message}`, "red");
+      }
+    }
+
+    async function deleteSection(path, sha, title) {
+      if (!confirm(`Are you sure you want to permanently delete the section "${title}"?`)) return;
+
+      const token = sessionStorage.getItem('github_pat');
+      showStatus(`Deleting section "${title}"...`, "blue");
+
+      try {
+        const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+        const res = await fetch(url, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: `Delete section: ${title}`,
+            sha: sha,
+            branch: "main"
+          })
+        });
+
+        if (!res.ok) throw new Error("Could not delete from GitHub");
+
+        showStatus(`✅ Successfully deleted section "${title}"`, "green");
+        loadExistingSections();
+      } catch (err) {
+        showStatus(`❌ Delete failed: ${err.message}`, "red");
       }
     }
   </script>
