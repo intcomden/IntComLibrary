@@ -2,7 +2,7 @@
 title: "Test Document"
 author: "Test Author"
 language: "en"
-description: "This is a test description for the Internationalist Communist Library."
+description: "This is a test description for the Red Alcoholic Archive."
 pdf: "test.pdf"
 layout: text
 ---

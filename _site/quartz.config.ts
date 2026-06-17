@@ -3,12 +3,12 @@ import * as Plugin from "./quartz/plugins"
 
 /**
  * Quartz 4.0 Configuration
- * Customized for the Internationalist Communist Library (ICP-style theme)
+ * Customized for the Red Alcoholic Archive (ICP-style theme)
  * Matches the main archive colors and typography for a seamless transition.
  */
 const config: QuartzConfig = {
   configuration: {
-    pageTitle: "Communist Library Wiki",
+    pageTitle: "Red Alcoholic Archive Wiki",
     enableSPA: true,
     enablePopovers: true,
     analytics: {
