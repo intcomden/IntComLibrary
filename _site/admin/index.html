@@ -219,11 +219,21 @@
 <body>
   <div class="container">
     <div class="brand-logo">
-      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M15 75C25 75 38 66 50 66C62 66 75 75 85 75V25C75 25 62 16 50 16C38 16 25 25 15 25V75Z" fill="#d63031" stroke="#ff4d4d" stroke-width="2"/>
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 80px; height: 80px; margin: 0 auto 1.5rem auto; display: block;">
+        <!-- Red Book Outer Border -->
+        <path d="M15 75C25 75 38 66 50 66C62 66 75 75 85 75V25C75 25 62 16 50 16C38 16 25 25 15 25V75Z" fill="#d63031" stroke="#ff4d4d" stroke-width="2" stroke-linejoin="round"/>
+        <!-- Book Spine Divider -->
         <path d="M50 16V66" stroke="#0c0d10" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M42 34C37 36 34 41 34 46C34 53 40 59 47 59C51 59 55 56 57 52C53 52 47 48 45 44C43 40 43 36 42 34Z" fill="#e5c158"/>
-        <path d="M39 51L56 34M53 31L56 34L51 39" stroke="#e5c158" stroke-width="3.5" stroke-linecap="round"/>
+        
+        <!-- Proper Hammer and Sickle -->
+        <g transform="translate(50, 44) scale(0.68)">
+          <!-- Hammer Handle -->
+          <path d="M -16,16 L 15,-15" stroke="#e5c158" stroke-width="4.5" stroke-linecap="round"/>
+          <!-- Hammer Head -->
+          <path d="M 6,-18 L 18,-6 L 14,-2 L 2,-14 Z" fill="#e5c158" stroke="#0c0d10" stroke-width="1.5" stroke-linejoin="round"/>
+          <!-- Sickle Blade -->
+          <path d="M 12,-16 C -2,-19 -18,-11 -20,2 C -22,12 -13,24 -2,26 C 6,28 11,23 14,16 C 8,19 0,16 -3,10 C -6,4 -3,-3 3,-6 C 7,-8 10,-8 12,-16 Z" fill="#e5c158" stroke="#0c0d10" stroke-width="1.5" stroke-linejoin="round"/>
+        </g>
       </svg>
     </div>
 
@@ -234,6 +244,24 @@
       <input type="text" id="mod-username" placeholder="Username (moderator)">
       <input type="password" id="mod-password" placeholder="Password">
       <button onclick="modLogin()" style="width: 100%;">Sign In</button>
+      <div style="text-align: center; margin-top: 1.5rem;">
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Need access?</span>
+        <a href="javascript:void(0)" onclick="showCreateAccount()" style="font-size: 0.85rem; color: var(--accent-gold); text-decoration: none; font-weight: 600; margin-left: 0.25rem;">Create Account</a>
+      </div>
+    </div>
+
+    <!-- Create Account screen -->
+    <div id="create-account-screen" class="hidden">
+      <h1 style="text-align: center;">Create Moderator Account</h1>
+      <div id="create-status" class="status error hidden"></div>
+      <input type="text" id="new-username" placeholder="Choose Username">
+      <input type="password" id="new-password" placeholder="Password (min 6 chars)">
+      <input type="password" id="confirm-password" placeholder="Confirm Password">
+      <button onclick="createAccount()" style="width: 100%;">Register Account</button>
+      <div style="text-align: center; margin-top: 1.5rem;">
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Already have an account?</span>
+        <a href="javascript:void(0)" onclick="showLogin()" style="font-size: 0.85rem; color: var(--accent-gold); text-decoration: none; font-weight: 600; margin-left: 0.25rem;">Sign In</a>
+      </div>
     </div>
 
     <!-- PAT connection screen -->
@@ -389,7 +417,9 @@
       const pass = document.getElementById('mod-password').value;
       const status = document.getElementById('login-status');
       
-      if (MOD_CREDENTIALS[user] && MOD_CREDENTIALS[user] === pass) {
+      const localCreds = JSON.parse(localStorage.getItem('mod_credentials') || '{}');
+      
+      if ((MOD_CREDENTIALS[user] && MOD_CREDENTIALS[user] === pass) || (localCreds[user] && localCreds[user] === pass)) {
         status.classList.add('hidden');
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('pat-screen').classList.remove('hidden');
@@ -397,6 +427,72 @@
         status.innerHTML = "❌ Invalid moderator credentials";
         status.classList.remove('hidden');
       }
+    }
+
+    function showCreateAccount() {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('create-account-screen').classList.remove('hidden');
+      document.getElementById('create-status').classList.add('hidden');
+    }
+
+    function showLogin() {
+      document.getElementById('create-account-screen').classList.add('hidden');
+      document.getElementById('login-screen').classList.remove('hidden');
+      document.getElementById('login-status').classList.add('hidden');
+    }
+
+    function createAccount() {
+      const user = document.getElementById('new-username').value.trim();
+      const pass = document.getElementById('new-password').value;
+      const confirmPass = document.getElementById('confirm-password').value;
+      const status = document.getElementById('create-status');
+
+      if (!user || !pass || !confirmPass) {
+        status.innerHTML = "❌ All fields are required";
+        status.className = "status error";
+        status.classList.remove('hidden');
+        return;
+      }
+
+      if (pass.length < 6) {
+        status.innerHTML = "❌ Password must be at least 6 characters";
+        status.className = "status error";
+        status.classList.remove('hidden');
+        return;
+      }
+
+      if (pass !== confirmPass) {
+        status.innerHTML = "❌ Passwords do not match";
+        status.className = "status error";
+        status.classList.remove('hidden');
+        return;
+      }
+
+      const localCreds = JSON.parse(localStorage.getItem('mod_credentials') || '{}');
+      if (MOD_CREDENTIALS[user] || localCreds[user]) {
+        status.innerHTML = "❌ Username already exists";
+        status.className = "status error";
+        status.classList.remove('hidden');
+        return;
+      }
+
+      // Save to local storage
+      localCreds[user] = pass;
+      localStorage.setItem('mod_credentials', JSON.stringify(localCreds));
+
+      status.innerHTML = "🎉 Account created successfully! Redirecting to login...";
+      status.className = "status success";
+      status.classList.remove('hidden');
+
+      setTimeout(() => {
+        showLogin();
+        document.getElementById('mod-username').value = user;
+        document.getElementById('mod-password').value = pass;
+        // Clean fields
+        document.getElementById('new-username').value = "";
+        document.getElementById('new-password').value = "";
+        document.getElementById('confirm-password').value = "";
+      }, 1500);
     }
 
     // 2. PAT connection check
