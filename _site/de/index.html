@@ -7,67 +7,38 @@
   
   <link rel="icon" type="image/png" href="/internationalist-library/favicon.png">
 
-  <!-- Support for custom search, cards, and admin dashboard styling -->
+  <!-- Main Stylesheet -->
   <link rel="stylesheet" href="/internationalist-library/assets/css/style.css">
-
-  <!-- Cleaned-up style overrides provided by the user -->
-  <style>
-    :root {
-      --bg: #0c0d10;
-      --card: #14161d;
-      --red: #e63939;
-      --gold: #e5c158;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-    }
-    body {
-      margin: 0;
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg) !important;
-      color: var(--text) !important;
-      line-height: 1.7;
-    }
-    .header {
-      background: #1a1c24 !important;
-      padding: 1.5rem !important;
-      text-align: center !important;
-      border-bottom: 3px solid var(--red) !important;
-      height: auto !important;
-      display: block !important;
-    }
-    .logo {
-      font-size: 2.2rem !important;
-      font-weight: bold !important;
-      color: var(--red) !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      gap: 12px !important;
-    }
-    .container {
-      max-width: 1100px !important;
-      margin: 2rem auto !important;
-      padding: 0 1.5rem !important;
-    }
-    .card {
-      background: var(--card) !important;
-      border-left: 5px solid var(--red) !important;
-      padding: 1.5rem !important;
-      margin-bottom: 1.5rem !important;
-      border-radius: 4px !important;
-    }
-    h1, h2 { color: var(--red) !important; }
-  </style>
 </head>
 <body>
-  <div class="header">
+  <header class="header">
     <div class="logo">
-      <img src="/internationalist-library/assets/logo.svg" alt="☭" style="height: 48px; width: 48px; vertical-align: middle;">
-      Internationalist Communist Library
+      <a href="/internationalist-library/" class="logo-link">
+        <img src="/internationalist-library/assets/logo.svg" alt="☭" class="logo-img">
+        <span>Internationalist Communist Library</span>
+      </a>
     </div>
-  </div>
+    <div class="nav-container">
+      <nav class="lang-nav" aria-label="Language selector">
+  <a href="/internationalist-library/" class="lang-link ">English</a>
+  <span class="lang-sep">|</span>
+  <a href="/internationalist-library/pt/" class="lang-link ">Português</a>
+  <span class="lang-sep">|</span>
+  <a href="/internationalist-library/es/" class="lang-link ">Español</a>
+  <span class="lang-sep">|</span>
+  <a href="/internationalist-library/it/" class="lang-link ">Italiano</a>
+  <span class="lang-sep">|</span>
+  <a href="/internationalist-library/nl/" class="lang-link ">Nederlands</a>
+  <span class="lang-sep">|</span>
+  <a href="/internationalist-library/de/" class="lang-link active">Deutsch</a>
+  <span class="lang-sep">|</span>
+  <a href="/internationalist-library/el/" class="lang-link ">Ελληνικά</a>
+</nav>
 
-  <div class="container">
+    </div>
+  </header>
+
+  <main class="container">
     <div style="margin-bottom: 2.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
   <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem; font-family: var(--font-serif);">☭ Theoretisches Archiv</h2>
   <p style="color: var(--text-muted); font-size: 1rem;">
@@ -117,6 +88,6 @@
   });
 </script>
 
-  </div>
+  </main>
 </body>
 </html>
