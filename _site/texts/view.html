@@ -5,11 +5,11 @@
 
 
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Red Alcoholic Archive • Red Alcoholic Archive</title>
+  <title>Loading Text... • Red Alcoholic Archive</title>
   
   <link rel="icon" type="image/png" href="../favicon.png">
 
@@ -721,7 +721,7 @@ h1, h2, h3 {
   <span class="lang-sep">|</span>
   <a href="../pt/index.html" class="lang-link ">Português</a>
   <span class="lang-sep">|</span>
-  <a href="../es/index.html" class="lang-link active">Español</a>
+  <a href="../es/index.html" class="lang-link ">Español</a>
   <span class="lang-sep">|</span>
   <a href="../it/index.html" class="lang-link ">Italiano</a>
   <span class="lang-sep">|</span>
@@ -739,11 +739,11 @@ h1, h2, h3 {
     <aside class="sidebar">
       <div class="search-container">
         <span class="search-icon">🔍</span>
-        <input type="text" class="search-input" id="global-search" placeholder="Buscar archivo...">
+        <input type="text" class="search-input" id="global-search" placeholder="Search archive by title, author...">
       </div>
       <nav class="sidebar-nav">
-        <a href="../es/index.html" class="sidebar-link ">
-          📚 Todos los Textos
+        <a href="../index.html" class="sidebar-link ">
+          📚 All Texts
         </a>
         
         <div id="sidebar-sections-container">
@@ -753,45 +753,316 @@ h1, h2, h3 {
           
           
           
-            <div class="sidebar-title" style="margin-top: 1.5rem;">Secciones Temáticas</div>
-            
-              
-              
-              <a href="../sections/es-critica-economia-politica.html" class="sidebar-link ">
-                Crítica General de la Economía Política
-              </a>
-            
-          
         </div>
       </nav>
     </aside>
 
     <main class="main-content">
-      <div style="margin-bottom: 2.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
-  <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem; font-family: var(--font-serif);">☭ Archivo Teórico</h2>
-  <p style="color: var(--text-muted); font-size: 1rem;">
-    Acceda a textos teóricos clave, tesis y manifiestos históricos de las tradiciones comunista de izquierda, internacionalista y consejista.
-  </p>
-</div>
+      <div class="reader-container" id="reader-container" style="display: none;">
+  <!-- Main content area (Viewer + Info) -->
+  <div class="reader-main">
+    <nav class="language-nav" style="justify-content: flex-start; margin-bottom: 1rem;">
+      <a id="back-link" href="#" style="font-weight: 500; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
+        <!-- Filled by JS -->
+      </a>
+    </nav>
 
-<!-- Texts Grid -->
-<div class="cards-grid" id="cards-grid">
-  
-  
-    <div style="grid-column: 1 / -1; padding: 3rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius); text-align: center;">
-      <p style="color: var(--text-muted);">Ningún texto disponible en español aún.</p>
+    <header style="margin-bottom: 2rem;">
+      <h1 id="text-title" style="font-size: 2.2rem; line-height: 1.2; margin-bottom: 0.5rem; font-family: var(--font-serif);"></h1>
+      <p id="text-author" style="font-family: var(--font-display); color: var(--accent-gold); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.05em;"></p>
+    </header>
+
+    <div id="pdf-container">
+      <!-- Filled by JS -->
     </div>
-  
+
+    <!-- Text Description / Commentary (Rendered underneath PDF) -->
+    <section class="sidebar-widget" style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 2rem; margin-top: 1.5rem;">
+      <h2 id="commentary-title" style="font-size: 1.25rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-gold); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+        <!-- Filled by JS -->
+      </h2>
+      <div id="text-content" style="font-family: var(--font-serif); font-size: 1.05rem; line-height: 1.8; color: var(--text-main); white-space: pre-wrap;">
+        <!-- Filled by JS -->
+      </div>
+    </section>
+  </div>
+
+  <!-- Sidebar widget area (Metadata + Download Actions) -->
+  <aside class="reader-sidebar">
+    <div class="sidebar-widget">
+      <h3 class="sidebar-widget-title" id="metadata-widget-title">Document Details</h3>
+      <div class="metadata-list">
+        <div class="metadata-item">
+          <span class="metadata-label" id="label-title">Title</span>
+          <span class="metadata-value" id="meta-title" style="font-weight: 600;"></span>
+        </div>
+        
+        <div class="metadata-item" id="meta-author-row">
+          <span class="metadata-label" id="label-author">Author</span>
+          <span class="metadata-value" id="meta-author"></span>
+        </div>
+
+        <div class="metadata-item">
+          <span class="metadata-label" id="label-language">Language</span>
+          <span class="metadata-value" id="meta-language" style="display: flex; align-items: center; gap: 0.4rem;"></span>
+        </div>
+
+        <div class="metadata-item">
+          <span class="metadata-label" id="label-format">Format</span>
+          <span class="metadata-value" style="font-family: monospace; font-size: 0.85rem;">PDF Document (.pdf)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-widget" id="actions-widget" style="border-color: rgba(214, 48, 49, 0.3); display: none;">
+      <h3 class="sidebar-widget-title" id="label-actions" style="color: var(--accent-red);">Actions</h3>
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <a id="btn-download" href="#" download class="btn btn-primary btn-block">
+          <!-- Filled by JS -->
+        </a>
+        <a id="btn-view-full" href="#" target="_blank" class="btn btn-secondary btn-block">
+          <!-- Filled by JS -->
+        </a>
+      </div>
+    </div>
+  </aside>
 </div>
 
+<div id="loading-container" style="padding: 5rem; text-align: center; color: var(--text-muted);">
+  <p style="font-size: 1.2rem;" id="loading-text">Loading document...</p>
+</div>
+
+<script>
+  const translations = {
+    pt: {
+      back: '← Voltar para a Biblioteca',
+      back_url: 'pt/index.html',
+      info_title: 'Detalhes do Texto',
+      title: 'Título',
+      author: 'Autor',
+      language: 'Idioma',
+      format: 'Formato',
+      download: 'Baixar PDF',
+      fullscreen: 'Tela Cheia',
+      about: 'Sobre este Texto',
+      no_pdf: 'Nenhum arquivo PDF anexado a esta entrada.',
+      flag: '🇧🇷',
+      lang_name: 'Português (BR)'
+    },
+    es: {
+      back: '← Volver a la Biblioteca',
+      back_url: 'es/index.html',
+      info_title: 'Detalles del Texto',
+      title: 'Título',
+      author: 'Autor',
+      language: 'Idioma',
+      format: 'Formato',
+      download: 'Descargar PDF',
+      fullscreen: 'Pantalla Completa',
+      about: 'Acerca de este Texto',
+      no_pdf: 'No hay ningún archivo PDF adjunto a esta entrada.',
+      flag: '🇪🇸',
+      lang_name: 'Español'
+    },
+    it: {
+      back: '← Torna alla Biblioteca',
+      back_url: 'it/index.html',
+      info_title: 'Dettagli del Testo',
+      title: 'Titolo',
+      author: 'Autore',
+      language: 'Lingua',
+      format: 'Formato',
+      download: 'Scarica il PDF',
+      fullscreen: 'Schermo Intero',
+      about: 'Informazioni su questo Testo',
+      no_pdf: 'Nessun file PDF allegato a questa voce.',
+      flag: '🇮🇹',
+      lang_name: 'Italiano'
+    },
+    nl: {
+      back: '← Terug naar de Bibliotheek',
+      back_url: 'nl/index.html',
+      info_title: 'Document Details',
+      title: 'Titel',
+      author: 'Auteur',
+      language: 'Taal',
+      format: 'Formaat',
+      download: 'PDF downloaden',
+      fullscreen: 'Volledig Scherm',
+      about: 'Over deze Tekst',
+      no_pdf: 'Geen PDF-bestand gekoppeld aan dit item.',
+      flag: '🇳🇱',
+      lang_name: 'Nederlands'
+    },
+    de: {
+      back: '← Zurück zur Bibliothek',
+      back_url: 'de/index.html',
+      info_title: 'Textdetails',
+      title: 'Titel',
+      author: 'Autor',
+      language: 'Sprache',
+      format: 'Format',
+      download: 'PDF herunterladen',
+      fullscreen: 'Vollbild',
+      about: 'Über diesen Text',
+      no_pdf: 'Diesem Eintrag ist keine PDF-Datei beigefügt.',
+      flag: '🇩🇪',
+      lang_name: 'Deutsch'
+    },
+    el: {
+      back: '← Επιστροφή στη Βιβλιοθήκη',
+      back_url: 'el/index.html',
+      info_title: 'Λεπτομέρειες Κειμένου',
+      title: 'Τίτλος',
+      author: 'Συγγραφέας',
+      language: 'Γλώσσα',
+      format: 'Μορφή',
+      download: 'Λήψη PDF',
+      fullscreen: 'Πλήρης Οθόνη',
+      about: 'Σχετικά με το Κείμενο',
+      no_pdf: 'Δεν υπάρχει αρχείο PDF συνδεδεμένο με αυτήν την καταχώρηση.',
+      flag: '🇬🇷',
+      lang_name: 'Ελληνικά'
+    },
+    en: {
+      back: '← Back to Library',
+      back_url: 'index.html',
+      info_title: 'Document Details',
+      title: 'Title',
+      author: 'Author',
+      language: 'Language',
+      format: 'Format',
+      download: 'Download PDF',
+      fullscreen: 'Full Screen',
+      about: 'About this Text',
+      no_pdf: 'No PDF file attached to this entry.',
+      flag: '🇬🇧',
+      lang_name: 'English'
+    }
+  };
+
+  function getTranslation(lang) {
+    return translations[lang] || translations.en;
+  }
+
+  function loadText() {
+    if (!window.db) return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const docId = urlParams.get('id');
+    const relativePrefix = "";
+
+    if (!docId) {
+      document.getElementById('loading-text').innerText = 'Error: No document ID provided.';
+      return;
+    }
+
+    window.db.collection("texts").doc(docId).get()
+      .then(doc => {
+        if (!doc.exists) {
+          document.getElementById('loading-text').innerText = 'Error: Document not found.';
+          return;
+        }
+
+        const data = doc.data();
+        const lang = data.language || 'en';
+        const t = getTranslation(lang);
+
+        // Update page title
+        document.title = data.title + " • Red Archive";
+
+        // Back link
+        const backLink = document.getElementById('back-link');
+        backLink.href = relativePrefix + t.back_url;
+        backLink.innerText = t.back;
+
+        // Title and author
+        document.getElementById('text-title').innerText = data.title;
+        const authorEl = document.getElementById('text-author');
+        if (data.author) {
+          authorEl.innerText = data.author;
+          authorEl.style.display = 'block';
+        } else {
+          authorEl.style.display = 'none';
+        }
+
+        // PDF iframe
+        const pdfContainer = document.getElementById('pdf-container');
+        if (data.pdfUrl || data.pdfName) {
+          const fileUrl = data.pdfUrl || (relativePrefix + 'assets/uploads/' + data.pdfName);
+          const viewerUrl = 'https://mozilla.github.io/pdf.js/web/viewer.html?file=' + encodeURIComponent(fileUrl);
+          pdfContainer.innerHTML = `
+            <div style="position: relative;">
+              <iframe 
+                src="${viewerUrl}" 
+                class="pdf-viewer-frame"
+                allowfullscreen>
+              </iframe>
+            </div>
+          `;
+          
+          // Action buttons
+          document.getElementById('btn-download').href = fileUrl;
+          document.getElementById('btn-download').innerText = '📥 ' + t.download;
+          document.getElementById('btn-view-full').href = fileUrl;
+          document.getElementById('btn-view-full').innerText = '🔗 ' + t.fullscreen;
+          document.getElementById('actions-widget').style.display = 'block';
+        } else {
+          pdfContainer.innerHTML = `
+            <div style="padding: 3rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius); text-align: center;">
+              <p style="color: var(--accent-red); font-size: 1.1rem; font-weight: 500;">${t.no_pdf}</p>
+            </div>
+          `;
+          document.getElementById('actions-widget').style.display = 'none';
+        }
+
+        // Commentary
+        document.getElementById('commentary-title').innerText = t.about;
+        document.getElementById('text-content').innerText = data.description || '';
+
+        // Sidebar metadata
+        document.getElementById('metadata-widget-title').innerText = t.info_title;
+        document.getElementById('label-title').innerText = t.title;
+        document.getElementById('meta-title').innerText = data.title;
+        
+        const authorRow = document.getElementById('meta-author-row');
+        if (data.author) {
+          document.getElementById('label-author').innerText = t.author;
+          document.getElementById('meta-author').innerText = data.author;
+          authorRow.style.display = 'flex';
+        } else {
+          authorRow.style.display = 'none';
+        }
+
+        document.getElementById('label-language').innerText = t.language;
+        document.getElementById('meta-language').innerHTML = `${t.flag} ${t.lang_name}`;
+        document.getElementById('label-format').innerText = t.format;
+        document.getElementById('label-actions').innerText = 'Actions';
+
+        // Toggle visibility
+        document.getElementById('loading-container').style.display = 'none';
+        document.getElementById('reader-container').style.display = 'grid';
+      })
+      .catch(err => {
+        console.error("Error fetching text details:", err);
+        document.getElementById('loading-text').innerText = 'Error loading document details: ' + err.message;
+      });
+  }
+
+  // Bind execution
+  if (window.firebaseReady) {
+    loadText();
+  } else {
+    window.addEventListener('firebase-ready', loadText);
+  }
+</script>
 
     </main>
   </div>
 
   <footer style="margin-top: auto; padding: 3rem 1rem; border-top: 1px solid var(--border-color); text-align: center; font-size: 0.85rem; color: var(--text-dim); background: var(--bg-secondary);">
-    <p style="font-family: var(--font-display); font-size: 1.1rem; color: var(--accent-gold); margin-bottom: 0.75rem; letter-spacing: 0.05em;">¡Proletarios de todos los países, uníos!</p>
+    <p style="font-family: var(--font-display); font-size: 1.1rem; color: var(--accent-gold); margin-bottom: 0.75rem; letter-spacing: 0.05em;">Proletarians of all countries, unite!</p>
     <a href="../admin/index.html" style="color: var(--accent-red); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.4rem; transition: var(--transition);" onmouseover="this.style.color='var(--accent-red-hover)'" onmouseout="this.style.color='var(--accent-red)'">
-      ⚙️ Panel de Mantenimiento
+      ⚙️ Maintenance Panel
     </a>
   </footer>
 
@@ -803,9 +1074,9 @@ h1, h2, h3 {
 
     function hydrateSidebar() {
       if (!window.db) return;
-      const currentLang = "es";
+      const currentLang = "en";
       const relativePrefix = "../";
-      const sidebarTitle = "Secciones Temáticas";
+      const sidebarTitle = "Thematic Sections";
       
       window.db.collection("sections")
         .where("language", "==", currentLang)
@@ -841,7 +1112,7 @@ h1, h2, h3 {
 
     function hydrateHomepageTexts() {
       if (!window.db) return;
-      const currentLang = "es";
+      const currentLang = "en";
       const relativePrefix = "../";
       
       const grid = document.getElementById('cards-grid');
@@ -928,7 +1199,7 @@ h1, h2, h3 {
 
     document.addEventListener('DOMContentLoaded', () => {
       const searchInput = document.getElementById('global-search');
-      const pageUrl = "/es/";
+      const pageUrl = "/texts/view.html";
       const isHomepage = pageUrl === "/" || pageUrl === "/index.html" || pageUrl === "/pt/index.html" || pageUrl === "/es/index.html" || pageUrl === "/it/index.html" || pageUrl === "/nl/index.html" || pageUrl === "/de/index.html" || pageUrl === "/el/index.html";
 
       function filterCards(query) {
@@ -966,7 +1237,7 @@ h1, h2, h3 {
           if (e.key === 'Enter') {
             const query = e.target.value.trim();
             if (!isHomepage) {
-              const homeUrl = "../es/index.html?q=" + encodeURIComponent(query);
+              const homeUrl = "../index.html?q=" + encodeURIComponent(query);
               window.location.href = homeUrl;
             }
           }

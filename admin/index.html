@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin • Red Alcoholic Archive</title>
+
+  <!-- Firebase Compat SDKs (v10.8.0) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
   
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
@@ -294,16 +300,7 @@
       </div>
     </div>
 
-    <!-- PAT connection screen -->
-    <div id="pat-screen" class="hidden">
-      <h1>GitHub Authentication</h1>
-      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
-        Authenticate using your personal GitHub credentials. Your Personal Access Token (PAT) is saved inside your browser session and is cleared when you close the tab.
-      </p>
-      <div id="pat-status" class="status error hidden"></div>
-      <input type="password" id="pat" placeholder="Paste GitHub PAT (repo scope)">
-      <button onclick="connectPAT()" style="width: 100%;">Authenticate & Load Dashboard</button>
-    </div>
+    <!-- PAT connection screen removed -->
 
     <!-- Main Dashboard UI -->
     <div id="dashboard" class="hidden">
@@ -429,34 +426,72 @@
   </div>
 
   <script>
-    const REPO_OWNER = "intcomden";
-    const REPO_NAME = "IntComLibrary";
-
-    // Static passwords (can be changed to any strong keys)
-    const MOD_CREDENTIALS = {
-      "moderator": "lib2026com!!",
-      "admin": "intcomden_archive#1"
-    };
-
-    let existingFiles = []; // Cache list of files
+    window.firebaseReady = false;
+    let existingFiles = []; // Cache list of texts
     let existingSections = []; // Cache list of sections
 
-    // 1. Moderator username / password login
+    // Initialize Firebase dynamically from config
+    (async function() {
+      try {
+        const configRes = await fetch('../assets/js/firebase-config.json');
+        const firebaseConfig = await configRes.json();
+        firebase.initializeApp(firebaseConfig);
+        window.db = firebase.firestore();
+        window.storage = firebase.storage();
+        window.auth = firebase.auth();
+        window.firebaseReady = true;
+        window.dispatchEvent(new Event('firebase-ready'));
+      } catch (e) {
+        console.error("Firebase failed to load in admin:", e);
+        showStatus("❌ Failed to initialize Firebase. Please check assets/js/firebase-config.json", "red");
+      }
+    })();
+
+    // Listen to Firebase auth state
+    function initAuthObserver() {
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          document.getElementById('login-screen').classList.add('hidden');
+          document.getElementById('create-account-screen').classList.add('hidden');
+          document.getElementById('dashboard').classList.remove('hidden');
+          loadExistingTexts();
+        } else {
+          document.getElementById('dashboard').classList.add('hidden');
+          document.getElementById('create-account-screen').classList.add('hidden');
+          document.getElementById('login-screen').classList.remove('hidden');
+        }
+      });
+    }
+    
+    window.addEventListener('firebase-ready', initAuthObserver);
+
+    // Authentication Actions
     function modLogin() {
       const user = document.getElementById('mod-username').value.trim();
       const pass = document.getElementById('mod-password').value;
       const status = document.getElementById('login-status');
       
-      const localCreds = JSON.parse(localStorage.getItem('mod_credentials') || '{}');
-      
-      if ((MOD_CREDENTIALS[user] && MOD_CREDENTIALS[user] === pass) || (localCreds[user] && localCreds[user] === pass)) {
-        status.classList.add('hidden');
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('pat-screen').classList.remove('hidden');
-      } else {
-        status.innerHTML = "❌ Invalid moderator credentials";
+      if (!user || !pass) {
+        status.innerHTML = "❌ Username and password are required";
         status.classList.remove('hidden');
+        return;
       }
+      
+      status.innerHTML = "Signing in...";
+      status.className = "status info";
+      status.classList.remove('hidden');
+      
+      const email = user.includes('@') ? user : `${user}@redarchive.local`;
+      
+      auth.signInWithEmailAndPassword(email, pass)
+        .then(() => {
+          status.classList.add('hidden');
+        })
+        .catch(err => {
+          status.innerHTML = `❌ Login failed: ${err.message}`;
+          status.className = "status error";
+          status.classList.remove('hidden');
+        });
     }
 
     function showCreateAccount() {
@@ -498,86 +533,33 @@
         return;
       }
 
-      const localCreds = JSON.parse(localStorage.getItem('mod_credentials') || '{}');
-      if (MOD_CREDENTIALS[user] || localCreds[user]) {
-        status.innerHTML = "❌ Username already exists";
-        status.className = "status error";
-        status.classList.remove('hidden');
-        return;
-      }
-
-      // Save to local storage
-      localCreds[user] = pass;
-      localStorage.setItem('mod_credentials', JSON.stringify(localCreds));
-
-      status.innerHTML = "🎉 Account created successfully! Redirecting to login...";
-      status.className = "status success";
-      status.classList.remove('hidden');
-
-      setTimeout(() => {
-        showLogin();
-        document.getElementById('mod-username').value = user;
-        document.getElementById('mod-password').value = pass;
-        // Clean fields
-        document.getElementById('new-username').value = "";
-        document.getElementById('new-password').value = "";
-        document.getElementById('confirm-password').value = "";
-      }, 1500);
-    }
-
-    // 2. PAT connection check
-    async function connectPAT() {
-      const token = document.getElementById('pat').value.trim();
-      const status = document.getElementById('pat-status');
-      if (!token) return alert("Please enter your token");
-
-      status.innerHTML = "Authenticating with GitHub API...";
+      status.innerHTML = "Registering account...";
       status.className = "status info";
       status.classList.remove('hidden');
 
-      try {
-        // Verify token by calling GitHub API
-        const userRes = await fetch("https://api.github.com/user", {
-          headers: { 'Authorization': `token ${token}` }
+      const email = user.includes('@') ? user : `${user}@redarchive.local`;
+
+      auth.createUserWithEmailAndPassword(email, pass)
+        .then(() => {
+          status.innerHTML = "🎉 Account created successfully!";
+          status.className = "status success";
+          status.classList.remove('hidden');
+          setTimeout(() => {
+            status.classList.add('hidden');
+          }, 1000);
+        })
+        .catch(err => {
+          status.innerHTML = `❌ Registration failed: ${err.message}`;
+          status.className = "status error";
+          status.classList.remove('hidden');
         });
-        
-        if (!userRes.ok) throw new Error("Invalid GitHub token");
-        const userData = await userRes.json();
-
-        // Check if user has push access to repo
-        const repoRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, {
-          headers: { 'Authorization': `token ${token}` }
-        });
-        if (!repoRes.ok) throw new Error("Repository access denied or not found");
-        const repoData = await repoRes.json();
-
-        if (!repoData.permissions || !repoData.permissions.push) {
-          throw new Error("You do not have write access (push permissions) to this repository.");
-        }
-
-        // Successfully authenticated
-        sessionStorage.setItem('github_pat', token);
-        status.classList.add('hidden');
-        document.getElementById('pat-screen').classList.add('hidden');
-        document.getElementById('dashboard').classList.remove('hidden');
-        
-        // Load texts list in background
-        loadExistingTexts();
-      } catch (err) {
-        status.innerHTML = `❌ Connection failed: ${err.message}`;
-        status.className = "status error";
-        status.classList.remove('hidden');
-      }
     }
 
-    // Logout
     function logOut() {
-      sessionStorage.removeItem('github_pat');
-      document.getElementById('dashboard').classList.add('hidden');
-      document.getElementById('pat-screen').classList.remove('hidden');
+      auth.signOut();
     }
 
-    // 3. Tab Swapper
+    // Navigation Tabs
     function switchTab(tab) {
       document.getElementById('tab-publish').classList.add('hidden');
       document.getElementById('tab-manage').classList.add('hidden');
@@ -601,43 +583,30 @@
       }
     }
 
-    // 4. Load & parse texts
-    async function loadExistingTexts() {
-      const token = sessionStorage.getItem('github_pat');
+    // CRUD: Texts
+    function loadExistingTexts() {
       const listContainer = document.getElementById('texts-list');
       listContainer.innerHTML = "<p style='color: var(--text-muted);'>Loading library entries...</p>";
 
-      try {
-        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/_texts`, {
-          headers: { 'Authorization': `token ${token}` }
+      db.collection("texts").get()
+        .then(snapshot => {
+          const items = [];
+          snapshot.forEach(doc => {
+            items.push({ id: doc.id, ...doc.data() });
+          });
+
+          items.sort((a, b) => a.title.localeCompare(b.title));
+          existingFiles = items;
+
+          renderList(items);
+
+          const searchInput = document.getElementById('manage-search');
+          searchInput.removeEventListener('input', filterTextsHandler);
+          searchInput.addEventListener('input', (e) => filterTextsHandler(e, items));
+        })
+        .catch(err => {
+          listContainer.innerHTML = `<p style='color: #f87171;'>Error loading entries: ${err.message}</p>`;
         });
-        if (!res.ok) throw new Error("Could not fetch texts list");
-        
-        const files = await res.json();
-        existingFiles = files.filter(f => f.name.endsWith('.md'));
-        
-        listContainer.innerHTML = "";
-        if (existingFiles.length === 0) {
-          listContainer.innerHTML = "<p style='color: var(--text-muted);'>No archive texts found.</p>";
-          return;
-        }
-
-        // Load files metadata concurrently
-        const metaPromises = existingFiles.map(file => fetchFileMeta(file));
-        const items = await Promise.all(metaPromises);
-
-        // Sort items by Title
-        items.sort((a, b) => a.title.localeCompare(b.title));
-
-        renderList(items);
-
-        // Bind filter event
-        document.getElementById('manage-search').removeEventListener('input', filterTextsHandler);
-        document.getElementById('manage-search').addEventListener('input', (e) => filterTextsHandler(e, items));
-
-      } catch (err) {
-        listContainer.innerHTML = `<p style='color: #f87171;'>Error loading entries: ${err.message}</p>`;
-      }
     }
 
     function filterTextsHandler(e, items) {
@@ -650,57 +619,14 @@
       renderList(filtered);
     }
 
-    async function fetchFileMeta(file) {
-      const token = sessionStorage.getItem('github_pat');
-      const res = await fetch(file.url, {
-        headers: { 'Authorization': `token ${token}` }
-      });
-      const data = await res.json();
-      const rawContent = decodeURIComponent(escape(atob(data.content)));
-      const parsed = parseFrontMatter(rawContent);
-
-      return {
-        filename: file.name,
-        path: file.path,
-        sha: file.sha,
-        title: parsed.attributes.title || file.name,
-        author: parsed.attributes.author || "Unknown",
-        language: parsed.attributes.language || "en",
-        pdf: parsed.attributes.pdf || "",
-        description: parsed.body.trim(),
-        content: rawContent
-      };
-    }
-
-    function parseFrontMatter(mdContent) {
-      const frontMatterRegex = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/;
-      const match = mdContent.match(frontMatterRegex);
-      if (!match) return { attributes: {}, body: mdContent };
-
-      const yamlBlock = match[1];
-      const body = match[2];
-      const attributes = {};
-      
-      yamlBlock.split('\n').forEach(line => {
-        const colonIdx = line.indexOf(':');
-        if (colonIdx > 0) {
-          const key = line.substring(0, colonIdx).trim();
-          let value = line.substring(colonIdx + 1).trim();
-          if (value.startsWith('"') && value.endsWith('"')) {
-            value = value.substring(1, value.length - 1);
-          } else if (value.startsWith("'") && value.endsWith("'")) {
-            value = value.substring(1, value.length - 1);
-          }
-          attributes[key] = value;
-        }
-      });
-
-      return { attributes, body };
-    }
-
     function renderList(items) {
       const listContainer = document.getElementById('texts-list');
       listContainer.innerHTML = "";
+
+      if (items.length === 0) {
+        listContainer.innerHTML = "<p style='color: var(--text-muted);'>No archive texts found.</p>";
+        return;
+      }
 
       items.forEach(item => {
         const div = document.createElement('div');
@@ -716,71 +642,109 @@
 
         div.innerHTML = `
           <div class="item-info">
-            <span class="item-title">${item.title}</span>
-            <span class="item-meta">${item.author} • ${langFlag} ${item.language.toUpperCase()} • ${item.pdf || 'No PDF'}</span>
+            <span class="item-title">${escapeHtml(item.title)}</span>
+            <span class="item-meta">${escapeHtml(item.author || 'Unknown')} • ${langFlag} ${item.language.toUpperCase()} • ${escapeHtml(item.pdfName || 'No PDF')}</span>
           </div>
           <div class="item-actions">
-            <button onclick='editEntry(${JSON.stringify(item).replace(/'/g, "&apos;")})'>Edit</button>
-            <button class="danger" onclick="deleteEntry('${item.path}', '${item.sha}', '${item.title}')">Delete</button>
+            <button onclick="editEntry('${item.id}')">Edit</button>
+            <button class="danger" onclick="deleteEntry('${item.id}', '${escapeHtml(item.title)}')">Delete</button>
           </div>
         `;
         listContainer.appendChild(div);
       });
     }
 
-    // 5. Delete functionality
-    async function deleteEntry(path, sha, title) {
+    async function uploadText() {
+      const title = document.getElementById('title').value.trim();
+      const author = document.getElementById('author').value.trim() || "Unknown";
+      const description = document.getElementById('description').value.trim();
+      const language = document.getElementById('language').value;
+      const file = document.getElementById('pdf').files[0];
+      const docId = document.getElementById('edit-sha').value;
+
+      if (!title) return showStatus("❌ Please specify a title", "red");
+      if (!docId && !file) return showStatus("❌ Please select a PDF file to upload", "red");
+
+      showStatus("Publishing entry...", "blue");
+
+      try {
+        let pdfFilename = "";
+        let pdfUrl = "";
+
+        if (file) {
+          pdfFilename = file.name.toLowerCase().replace(/[^a-z0-9.-]/g, '-');
+          showStatus("Uploading PDF file to Firebase Storage...", "blue");
+          
+          const storageRef = storage.ref('uploads/' + pdfFilename);
+          await storageRef.put(file);
+          pdfUrl = await storageRef.getDownloadURL();
+        }
+
+        const dataObj = {
+          title: title,
+          author: author,
+          language: language,
+          description: description
+        };
+
+        if (file) {
+          dataObj.pdfName = pdfFilename;
+          dataObj.pdfUrl = pdfUrl;
+        }
+
+        if (docId) {
+          showStatus("Updating Firestore document...", "blue");
+          await db.collection("texts").doc(docId).update(dataObj);
+          showStatus(`✅ Successfully updated "${title}"!`, "green");
+        } else {
+          showStatus("Creating Firestore document...", "blue");
+          dataObj.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+          await db.collection("texts").add(dataObj);
+          showStatus(`✅ Successfully published "${title}"!`, "green");
+        }
+        
+        resetForm();
+      } catch (err) {
+        showStatus(`❌ Publish failed: ${err.message}`, "red");
+      }
+    }
+
+    async function deleteEntry(id, title) {
       if (!confirm(`Are you sure you want to permanently delete the entry "${title}"?`)) return;
 
-      const token = sessionStorage.getItem('github_pat');
       showStatus(`Deleting "${title}"...`, "blue");
 
       try {
-        const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
-        const res = await fetch(url, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `token ${token}`,
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            message: `Delete text entry: ${title}`,
-            sha: sha,
-            branch: "main"
-          })
-        });
-
-        if (!res.ok) throw new Error("Could not delete from GitHub");
-
-        showStatus(`... Successfully deleted "${title}"`, "green");
+        await db.collection("texts").doc(id).delete();
+        showStatus(`✅ Successfully deleted "${title}"`, "green");
         loadExistingTexts();
       } catch (err) {
         showStatus(`❌ Delete failed: ${err.message}`, "red");
       }
     }
 
-    // 6. Edit entry loader
-    function editEntry(item) {
-      document.getElementById('edit-sha').value = item.sha;
-      document.getElementById('edit-path').value = item.path;
+    function editEntry(id) {
+      const item = existingFiles.find(f => f.id === id);
+      if (!item) return;
+
+      document.getElementById('edit-sha').value = item.id;
       document.getElementById('language').value = item.language;
       document.getElementById('title').value = item.title;
-      document.getElementById('author').value = item.author;
-      document.getElementById('description').value = item.description;
+      document.getElementById('author').value = item.author || '';
+      document.getElementById('description').value = item.description || '';
 
       document.getElementById('form-action-title').innerText = "Edit Document Entry";
       document.getElementById('submit-btn').innerText = "Save Changes";
       document.getElementById('cancel-edit-btn').classList.remove('hidden');
       document.getElementById('pdf-edit-helper').classList.remove('hidden');
-      document.getElementById('pdf-file-label').innerText = "Upload PDF File (Optional)";
-
+      document.getElementById('pdf-file-label').innerText = "PDF File upload (Optional)";
+      
+      showStatus("", "blue");
       switchTab('publish');
     }
 
     function resetForm() {
       document.getElementById('edit-sha').value = "";
-      document.getElementById('edit-path').value = "";
       document.getElementById('language').value = "en";
       document.getElementById('title').value = "";
       document.getElementById('author').value = "";
@@ -794,148 +758,6 @@
       document.getElementById('pdf-file-label').innerText = "PDF File upload";
       
       showStatus("", "blue");
-    }
-
-    // 7. Publish & Upload Action
-    async function uploadText() {
-      const token = sessionStorage.getItem('github_pat');
-      if (!token) return showStatus("❌ Please connect with PAT first", "red");
-
-      const title = document.getElementById('title').value.trim();
-      const author = document.getElementById('author').value.trim() || "Unknown";
-      const description = document.getElementById('description').value.trim();
-      const language = document.getElementById('language').value;
-      const file = document.getElementById('pdf').files[0];
-
-      const editSha = document.getElementById('edit-sha').value;
-      const editPath = document.getElementById('edit-path').value;
-
-      if (!title) return showStatus("❌ Please specify a title", "red");
-      if (!editSha && !file) return showStatus("❌ Please select a PDF file to upload", "red");
-
-      showStatus("Publishing entry...", "blue");
-
-      try {
-        let pdfFilename = "";
-        
-        // A. If file chosen, upload PDF
-        if (file) {
-          pdfFilename = file.name.toLowerCase().replace(/[^a-z0-9.-]/g, '-');
-          const pdfBase64 = await fileToBase64(file);
-          
-          showStatus("Uploading PDF file to assets/uploads/...", "blue");
-          
-          // Check if file already exists on GitHub to obtain sha (so we don't crash)
-          let existingPdfSha = null;
-          try {
-            const pdfCheck = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/assets/uploads/${pdfFilename}`, {
-              headers: { 'Authorization': `token ${token}` }
-            });
-            if (pdfCheck.ok) {
-              const checkData = await pdfCheck.json();
-              existingPdfSha = checkData.sha;
-            }
-          } catch(e) {}
-
-          await githubPutFile(`assets/uploads/${pdfFilename}`, pdfBase64, `Upload PDF: ${pdfFilename}`, existingPdfSha);
-        } else if (editSha) {
-          // If editing and no new file, preserve original PDF filename
-          const fileMeta = await fetchFileMeta({ url: `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${editPath}` });
-          pdfFilename = fileMeta.pdf;
-        }
-
-        // B. Generate Markdown Content
-        const mdContent = `---
-layout: text
-title: "${title}"
-author: "${author}"
-language: "${language}"
-pdf: "${pdfFilename}"
----
-
-${description}`;
-
-        const safeSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        const finalPath = editPath || `_texts/${language}-${safeSlug}.md`;
-        
-        // Check if markdown file already exists to obtain its sha (prevents conflict/overwrite failures)
-        let existingMdSha = null;
-        if (editPath && editPath === finalPath) {
-          existingMdSha = editSha;
-        } else {
-          try {
-            const mdCheck = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${finalPath}`, {
-              headers: { 'Authorization': `token ${token}` }
-            });
-            if (mdCheck.ok) {
-              const checkData = await mdCheck.json();
-              existingMdSha = checkData.sha;
-            }
-          } catch(e) {}
-        }
-        
-        showStatus("Uploading Markdown document to _texts/...", "blue");
-        await githubPutFile(finalPath, btoa(unescape(encodeURIComponent(mdContent))), `Publish text: ${title}`, existingMdSha);
-
-        // C. If editing changed path (e.g. language/title rename), delete old file
-        if (editPath && editPath !== finalPath) {
-          showStatus("Updating index routing (removing old version)...", "blue");
-          await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${editPath}`, {
-            method: 'DELETE',
-            headers: {
-              'Authorization': `token ${token}`,
-              'Accept': 'application/vnd.github.v3+json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              message: `Clean up old text path after renaming to ${finalPath}`,
-              sha: editSha,
-              branch: "main"
-            })
-          });
-        }
-
-        showStatus(`✅ Successfully published "${title}"!`, "green");
-        resetForm();
-      } catch (err) {
-        showStatus(`❌ Publish failed: ${err.message}`, "red");
-      }
-    }
-
-    function fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(',')[1]);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-
-    async function githubPutFile(path, contentBase64, commitMessage, sha = null) {
-      const token = sessionStorage.getItem('github_pat');
-      const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
-      
-      const body = {
-        message: commitMessage,
-        content: contentBase64,
-        branch: "main"
-      };
-      if (sha) body.sha = sha;
-
-      const res = await fetch(url, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `token ${token}`,
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-      });
-
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.message || "Failed to commit file to GitHub");
-      }
     }
 
     function showStatus(msg, color) {
@@ -952,47 +774,35 @@ ${description}`;
       }
     }
 
-    // 8. Load & parse sections
-    async function loadExistingSections() {
-      const token = sessionStorage.getItem('github_pat');
+    // CRUD: Sections
+    function loadExistingSections() {
       const listContainer = document.getElementById('sections-list');
       listContainer.innerHTML = "<p style='color: var(--text-muted);'>Loading sections...</p>";
 
-      try {
-        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/sections`, {
-          headers: { 'Authorization': `token ${token}` }
+      db.collection("sections").get()
+        .then(snapshot => {
+          const items = [];
+          snapshot.forEach(doc => {
+            items.push({ id: doc.id, ...doc.data() });
+          });
+
+          items.sort((a, b) => {
+            const orderA = parseInt(a.order) || 100;
+            const orderB = parseInt(b.order) || 100;
+            if (orderA !== orderB) return orderA - orderB;
+            return a.title.localeCompare(b.title);
+          });
+          existingSections = items;
+
+          renderSectionsList(items);
+
+          const searchInput = document.getElementById('sections-search');
+          searchInput.removeEventListener('input', filterSectionsHandler);
+          searchInput.addEventListener('input', (e) => filterSectionsHandler(e, items));
+        })
+        .catch(err => {
+          listContainer.innerHTML = `<p style='color: #f87171;'>Error loading sections: ${err.message}</p>`;
         });
-        if (!res.ok) throw new Error("Could not fetch sections list");
-        
-        const files = await res.json();
-        existingSections = files.filter(f => f.name.endsWith('.md'));
-        
-        listContainer.innerHTML = "";
-        if (existingSections.length === 0) {
-          listContainer.innerHTML = "<p style='color: var(--text-muted);'>No sections found.</p>";
-          return;
-        }
-
-        const metaPromises = existingSections.map(file => fetchSectionMeta(file));
-        const items = await Promise.all(metaPromises);
-
-        // Sort items by Order then by Title
-        items.sort((a, b) => {
-          const orderA = parseInt(a.order) || 100;
-          const orderB = parseInt(b.order) || 100;
-          if (orderA !== orderB) return orderA - orderB;
-          return a.title.localeCompare(b.title);
-        });
-
-        renderSectionsList(items);
-
-        // Bind filter event
-        document.getElementById('sections-search').removeEventListener('input', filterSectionsHandler);
-        document.getElementById('sections-search').addEventListener('input', (e) => filterSectionsHandler(e, items));
-
-      } catch (err) {
-        listContainer.innerHTML = `<p style='color: #f87171;'>Error loading sections: ${err.message}</p>`;
-      }
     }
 
     function filterSectionsHandler(e, items) {
@@ -1004,31 +814,14 @@ ${description}`;
       renderSectionsList(filtered);
     }
 
-    async function fetchSectionMeta(file) {
-      const token = sessionStorage.getItem('github_pat');
-      const res = await fetch(file.url, {
-        headers: { 'Authorization': `token ${token}` }
-      });
-      const data = await res.json();
-      const rawContent = decodeURIComponent(escape(atob(data.content)));
-      const parsed = parseFrontMatter(rawContent);
-
-      return {
-        filename: file.name,
-        path: file.path,
-        sha: file.sha,
-        title: parsed.attributes.title || file.name,
-        language: parsed.attributes.language || "en",
-        slug: parsed.attributes.slug || "",
-        order: parsed.attributes.order || "10",
-        content: parsed.body.trim(),
-        rawContent: rawContent
-      };
-    }
-
     function renderSectionsList(items) {
       const listContainer = document.getElementById('sections-list');
       listContainer.innerHTML = "";
+
+      if (items.length === 0) {
+        listContainer.innerHTML = "<p style='color: var(--text-muted);'>No sections found.</p>";
+        return;
+      }
 
       items.forEach(item => {
         const div = document.createElement('div');
@@ -1044,19 +837,18 @@ ${description}`;
 
         div.innerHTML = `
           <div class="item-info">
-            <span class="item-title">${item.title}</span>
-            <span class="item-meta">${langFlag} ${item.language.toUpperCase()} • Slug: ${item.slug} • Order: ${item.order}</span>
+            <span class="item-title">${escapeHtml(item.title)}</span>
+            <span class="item-meta">${langFlag} ${item.language.toUpperCase()} • Slug: ${escapeHtml(item.slug)} • Order: ${item.order}</span>
           </div>
           <div class="item-actions">
-            <button onclick='editSection(${JSON.stringify(item).replace(/'/g, "&apos;")})'>Edit</button>
-            <button class="danger" onclick="deleteSection('${item.path}', '${item.sha}', '${item.title}')">Delete</button>
+            <button onclick="editSection('${item.id}')">Edit</button>
+            <button class="danger" onclick="deleteSection('${item.id}', '${escapeHtml(item.title)}')">Delete</button>
           </div>
         `;
         listContainer.appendChild(div);
       });
     }
 
-    // 9. Section CRUD Actions
     function createNewSection() {
       resetSectionForm();
       document.getElementById('section-form-container').classList.remove('hidden');
@@ -1065,7 +857,6 @@ ${description}`;
 
     function resetSectionForm() {
       document.getElementById('edit-section-sha').value = "";
-      document.getElementById('edit-section-path').value = "";
       document.getElementById('section-language').value = "en";
       document.getElementById('section-title').value = "";
       document.getElementById('section-slug').value = "";
@@ -1074,14 +865,16 @@ ${description}`;
       document.getElementById('section-form-container').classList.add('hidden');
     }
 
-    function editSection(item) {
-      document.getElementById('edit-section-sha').value = item.sha;
-      document.getElementById('edit-section-path').value = item.path;
+    function editSection(id) {
+      const item = existingSections.find(s => s.id === id);
+      if (!item) return;
+
+      document.getElementById('edit-section-sha').value = item.id;
       document.getElementById('section-language').value = item.language;
       document.getElementById('section-title').value = item.title;
       document.getElementById('section-slug').value = item.slug;
       document.getElementById('section-order').value = item.order;
-      document.getElementById('section-content').value = item.content;
+      document.getElementById('section-content').value = item.content || '';
 
       document.getElementById('section-form-container').classList.remove('hidden');
       document.getElementById('section-form-title').innerText = "Edit Section";
@@ -1089,17 +882,12 @@ ${description}`;
     }
 
     async function saveSection() {
-      const token = sessionStorage.getItem('github_pat');
-      if (!token) return showStatus("❌ Please connect with PAT first", "red");
-
       const title = document.getElementById('section-title').value.trim();
       const language = document.getElementById('section-language').value;
       const slug = document.getElementById('section-slug').value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
       const order = document.getElementById('section-order').value || "10";
       const content = document.getElementById('section-content').value.trim();
-
-      const editSha = document.getElementById('edit-section-sha').value;
-      const editPath = document.getElementById('edit-section-path').value;
+      const docId = document.getElementById('edit-section-sha').value;
 
       if (!title) return alert("Please specify a section title");
       if (!slug) return alert("Please specify a slug");
@@ -1107,54 +895,22 @@ ${description}`;
       showStatus("Saving section...", "blue");
 
       try {
-        // Generate markdown content with YAML front matter
-        const mdContent = `---
-title: "${title}"
-language: "${language}"
-order: ${order}
-slug: "${slug}"
----
+        const docName = `${language}-${slug}`;
+        const dataObj = {
+          title: title,
+          language: language,
+          slug: slug,
+          order: parseInt(order),
+          content: content
+        };
 
-${content}`;
-
-        const finalPath = `sections/${language}-${slug}.md`;
-
-        // Check if section file already exists to obtain its sha (prevents conflict/overwrite failures)
-        let existingSectionSha = null;
-        if (editPath && editPath === finalPath) {
-          existingSectionSha = editSha;
-        } else {
-          try {
-            const sectionCheck = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${finalPath}`, {
-              headers: { 'Authorization': `token ${token}` }
-            });
-            if (sectionCheck.ok) {
-              const checkData = await sectionCheck.json();
-              existingSectionSha = checkData.sha;
-            }
-          } catch(e) {}
+        if (docId && docId !== docName) {
+          showStatus("Removing old section path...", "blue");
+          await db.collection("sections").doc(docId).delete();
         }
 
-        showStatus("Uploading Section file to sections/...", "blue");
-        await githubPutFile(finalPath, btoa(unescape(encodeURIComponent(mdContent))), `Save section: ${title}`, existingSectionSha);
-
-        // Delete old path if we renamed the section or changed its language
-        if (editPath && editPath !== finalPath) {
-          showStatus("Removing old section location...", "blue");
-          await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${editPath}`, {
-            method: 'DELETE',
-            headers: {
-              'Authorization': `token ${token}`,
-              'Accept': 'application/vnd.github.v3+json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              message: `Clean up old section path after renaming to ${finalPath}`,
-              sha: editSha,
-              branch: "main"
-            })
-          });
-        }
+        showStatus("Saving section document to Firestore...", "blue");
+        await db.collection("sections").doc(docName).set(dataObj);
 
         showStatus(`✅ Successfully saved section "${title}"!`, "green");
         resetSectionForm();
@@ -1164,35 +920,23 @@ ${content}`;
       }
     }
 
-    async function deleteSection(path, sha, title) {
+    async function deleteSection(id, title) {
       if (!confirm(`Are you sure you want to permanently delete the section "${title}"?`)) return;
 
-      const token = sessionStorage.getItem('github_pat');
-      showStatus(`Deleting section "${title}"...`, "blue");
+      showStatus("Deleting section...", "blue");
 
       try {
-        const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
-        const res = await fetch(url, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `token ${token}`,
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            message: `Delete section: ${title}`,
-            sha: sha,
-            branch: "main"
-          })
-        });
-
-        if (!res.ok) throw new Error("Could not delete from GitHub");
-
+        await db.collection("sections").doc(id).delete();
         showStatus(`✅ Successfully deleted section "${title}"`, "green");
         loadExistingSections();
       } catch (err) {
         showStatus(`❌ Delete failed: ${err.message}`, "red");
       }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
   </script>
 </body>
