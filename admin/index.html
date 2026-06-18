@@ -225,7 +225,7 @@
 <body>
   <div class="container">
     <div class="brand-logo">
-      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 80px; height: 80px; margin: 0 auto 1.5rem auto; display: block;">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 80px; height: 80px; margin: 0 auto 1.5rem auto; display: block">
         <!-- Defs for reuse -->
         <defs>
           <g id="admin-grain">
@@ -275,28 +275,28 @@
 
     <!-- Login screen -->
     <div id="login-screen">
-      <h1 style="text-align: center;">Moderator Access</h1>
+      <h1 style="text-align: center">Moderator Access</h1>
       <div id="login-status" class="status error hidden"></div>
       <input type="email" id="mod-email" placeholder="Email Address">
       <input type="password" id="mod-password" placeholder="Password">
-      <button onclick="modLogin()" style="width: 100%;">Sign In</button>
-      <div style="text-align: center; margin-top: 1.5rem;">
-        <span style="font-size: 0.85rem; color: var(--text-muted);">Need access?</span>
-        <a href="javascript:void(0)" onclick="showCreateAccount()" style="font-size: 0.85rem; color: var(--accent-gold); text-decoration: none; font-weight: 600; margin-left: 0.25rem;">Create Account</a>
+      <button onclick="modLogin()" style="width: 100%">Sign In</button>
+      <div style="text-align: center; margin-top: 1.5rem">
+        <span style="font-size: 0.85rem; color: var(--text-muted)">Need access?</span>
+        <a href="javascript:void(0)" onclick="showCreateAccount()" style="font-size: 0.85rem; color: var(--accent-gold); text-decoration: none; font-weight: 600; margin-left: 0.25rem">Create Account</a>
       </div>
     </div>
 
     <!-- Create Account screen -->
     <div id="create-account-screen" class="hidden">
-      <h1 style="text-align: center;">Create Moderator Account</h1>
+      <h1 style="text-align: center">Create Moderator Account</h1>
       <div id="create-status" class="status error hidden"></div>
       <input type="email" id="new-email" placeholder="Email Address">
       <input type="password" id="new-password" placeholder="Password (min 6 chars)">
       <input type="password" id="confirm-password" placeholder="Confirm Password">
-      <button onclick="createAccount()" style="width: 100%;">Register Account</button>
-      <div style="text-align: center; margin-top: 1.5rem;">
-        <span style="font-size: 0.85rem; color: var(--text-muted);">Already have an account?</span>
-        <a href="javascript:void(0)" onclick="showLogin()" style="font-size: 0.85rem; color: var(--accent-gold); text-decoration: none; font-weight: 600; margin-left: 0.25rem;">Sign In</a>
+      <button onclick="createAccount()" style="width: 100%">Register Account</button>
+      <div style="text-align: center; margin-top: 1.5rem">
+        <span style="font-size: 0.85rem; color: var(--text-muted)">Already have an account?</span>
+        <a href="javascript:void(0)" onclick="showLogin()" style="font-size: 0.85rem; color: var(--accent-gold); text-decoration: none; font-weight: 600; margin-left: 0.25rem">Sign In</a>
       </div>
     </div>
 
@@ -304,9 +304,9 @@
 
     <!-- Main Dashboard UI -->
     <div id="dashboard" class="hidden">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem">
         <h1>Admin Control Room</h1>
-        <button class="secondary" onclick="logOut()" style="padding: 6px 12px; font-size: 0.8rem;">Disconnect</button>
+        <button class="secondary" onclick="logOut()" style="padding: 6px 12px; font-size: 0.8rem">Disconnect</button>
       </div>
 
       <!-- Alert Bar -->
@@ -322,7 +322,7 @@
       <!-- Tab 1: Publish Form -->
       <div id="tab-publish">
         <h2 id="form-action-title">Upload New Document</h2>
-        <div style="margin-top: 1rem;">
+        <div style="margin-top: 1rem">
           <input type="hidden" id="edit-sha">
           <input type="hidden" id="edit-path">
 
@@ -348,12 +348,12 @@
 
           <label for="pdf" id="pdf-file-label">PDF File upload</label>
           <input type="file" id="pdf" accept=".pdf">
-          <p id="pdf-edit-helper" style="font-size: 0.8rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 20px;" class="hidden">
+          <p id="pdf-edit-helper" style="font-size: 0.8rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 20px" class="hidden">
             Leave file blank if you do not want to replace the existing PDF file.
           </p>
 
-          <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
-            <button id="submit-btn" onclick="uploadText()" style="flex: 1;">Publish Entry</button>
+          <div style="display: flex; gap: 0.5rem; margin-top: 1rem">
+            <button id="submit-btn" onclick="uploadText()" style="flex: 1">Publish Entry</button>
             <button id="cancel-edit-btn" class="secondary hidden" onclick="resetForm()">Cancel Edit</button>
           </div>
         </div>
@@ -362,8 +362,8 @@
       <!-- Tab 2: Manage Texts -->
       <div id="tab-manage" class="hidden">
         <h2>Archive Content Management</h2>
-        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-          <input type="text" id="manage-search" placeholder="Filter texts by title, author, or language..." style="margin-bottom: 0; flex: 1;">
+        <div style="margin-top: 1rem; display: flex; gap: 0.5rem">
+          <input type="text" id="manage-search" placeholder="Filter texts by title, author, or language..." style="margin-bottom: 0; flex: 1">
           <button class="secondary" onclick="loadExistingTexts()">🔄 Refresh</button>
         </div>
         <div class="item-list" id="texts-list">
@@ -373,13 +373,13 @@
 
       <!-- Tab 3: Manage Sections -->
       <div id="tab-sections" class="hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem">
           <h2>Archive Sections</h2>
           <button onclick="createNewSection()">➕ Create New Section</button>
         </div>
         
         <!-- Section Form Container (initially hidden) -->
-        <div id="section-form-container" class="hidden" style="background: var(--bg-primary); border: 1px solid var(--border-color); padding: 20px; border-radius: 4px; margin-bottom: 2rem;">
+        <div id="section-form-container" class="hidden" style="background: var(--bg-primary); border: 1px solid var(--border-color); padding: 20px; border-radius: 4px; margin-bottom: 2rem">
           <h3 id="section-form-title">Create New Section</h3>
           
           <input type="hidden" id="edit-section-sha">
@@ -408,14 +408,14 @@
           <label for="section-content">Section Texts List (Markdown list of texts/audiobooks)</label>
           <textarea id="section-content" placeholder="- Book Title - Author + Link..." rows="6"></textarea>
           
-          <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+          <div style="display: flex; gap: 0.5rem; margin-top: 1rem">
             <button id="section-submit-btn" onclick="saveSection()">Save Section</button>
             <button class="secondary" onclick="resetSectionForm()">Cancel</button>
           </div>
         </div>
 
-        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-          <input type="text" id="sections-search" placeholder="Filter sections by title or language..." style="margin-bottom: 0; flex: 1;">
+        <div style="margin-top: 1rem; display: flex; gap: 0.5rem">
+          <input type="text" id="sections-search" placeholder="Filter sections by title or language..." style="margin-bottom: 0; flex: 1">
           <button class="secondary" onclick="loadExistingSections()">🔄 Refresh</button>
         </div>
         <div class="item-list" id="sections-list">
@@ -935,7 +935,7 @@
 
     function escapeHtml(str) {
       if (!str) return '';
-      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+      return str.replace(/&/g, "&amp").replace(/</g, "&lt").replace(/>/g, "&gt").replace(/"/g, "&quot").replace(/'/g, "&#039");
     }
   </script>
 </body>

@@ -4,9 +4,9 @@ title: Red Alcoholic Archive
 language: es
 ---
 
-<div style="margin-bottom: 2.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
-  <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem; font-family: var(--font-serif);">☭ Archivo Teórico</h2>
-  <p style="color: var(--text-muted); font-size: 1rem;">
+<div style="margin-bottom: 2.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem">
+  <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem">☭ Archivo Teórico</h2>
+  <p style="color: var(--text-muted); font-size: 1rem">
     Acceda a textos teóricos clave, tesis y manifiestos históricos de las tradiciones comunista de izquierda, internacionalista y consejista.
   </p>
 </div>
@@ -17,7 +17,7 @@ language: es
   {% for text in lang_texts %}
     <div class="text-card" data-title="{{ text.title | downcase }}" data-author="{% if text.author %}{{ text.author | downcase }}{% endif %}" data-desc="{% if text.description %}{{ text.description | downcase }}{% endif %}">
       <div class="card-header">
-        <h3 class="card-title" style="font-family: var(--font-serif);">
+        <h3 class="card-title">
           <a href="{{ relative_prefix }}{{ text.url | remove_first: '/' }}">{{ text.title }}</a>
         </h3>
       </div>
@@ -32,14 +32,14 @@ language: es
       
       <div class="card-footer">
         <span class="card-meta-tag">🇪🇸 Español</span>
-        <a href="{{ relative_prefix }}{{ text.url | remove_first: '/' }}" style="font-weight: 600; font-size: 0.85rem; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 0.25rem;">
-          LEER TEXTO <span style="font-size: 1.1rem; line-height: 1;">→</span>
+        <a href="{{ relative_prefix }}{{ text.url | remove_first: '/' }}" style="font-weight: 600; font-size: 0.85rem; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 0.25rem">
+          LEER TEXTO <span style="font-size: 1.1rem; line-height: 1">→</span>
         </a>
       </div>
     </div>
   {% else %}
-    <div style="grid-column: 1 / -1; padding: 3rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius); text-align: center;">
-      <p style="color: var(--text-muted);">Ningún texto disponible en español aún.</p>
+    <div style="grid-column: 1 / -1; padding: 3rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius); text-align: center">
+      <p style="color: var(--text-muted)">Ningún texto disponible en español aún.</p>
     </div>
   {% endfor %}
 </div>

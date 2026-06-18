@@ -106,16 +106,16 @@ layout: default
 <div class="reader-container">
   <!-- Main content area (Viewer + Info) -->
   <div class="reader-main">
-    <nav class="language-nav" style="justify-content: flex-start; margin-bottom: 1rem;">
-      <a href="{{ relative_prefix }}{{ back_url }}" style="font-weight: 500; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
+    <nav class="language-nav" style="justify-content: flex-start; margin-bottom: 1rem">
+      <a href="{{ relative_prefix }}{{ back_url }}" style="font-weight: 500; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem">
         {{ back_text }}
       </a>
     </nav>
 
-    <header style="margin-bottom: 2rem;">
-      <h1 style="font-size: 2.2rem; line-height: 1.2; margin-bottom: 0.5rem; font-family: var(--font-serif);">{{ page.title }}</h1>
+    <header style="margin-bottom: 2rem">
+      <h1 style="font-size: 2.2rem; line-height: 1.2; margin-bottom: 0.5rem">{{ page.title }}</h1>
       {% if page.author %}
-        <p style="font-family: var(--font-display); color: var(--accent-gold); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.05em;">
+        <p style="font-family: var(--font-display); color: var(--accent-gold); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.05em">
           {{ page.author }}
         </p>
       {% endif %}
@@ -123,7 +123,7 @@ layout: default
 
     {% if page.pdf %}
       <!-- Mozilla PDF.js Embedded Web Viewer -->
-      <div style="position: relative;">
+      <div style="position: relative">
         <iframe 
           src="https://mozilla.github.io/pdf.js/web/viewer.html?file={{ site.url | append: site.baseurl | append: '/assets/uploads/' | append: page.pdf | url_encode }}" 
           class="pdf-viewer-frame"
@@ -131,17 +131,17 @@ layout: default
         </iframe>
       </div>
     {% else %}
-      <div style="padding: 3rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius); text-align: center;">
-        <p style="color: var(--accent-red); font-size: 1.1rem; font-weight: 500;">{{ no_pdf_text }}</p>
+      <div style="padding: 3rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius); text-align: center">
+        <p style="color: var(--accent-red); font-size: 1.1rem; font-weight: 500">{{ no_pdf_text }}</p>
       </div>
     {% endif %}
 
     <!-- Text Description / Commentary (Rendered underneath PDF) -->
-    <section class="sidebar-widget" style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 2rem; margin-top: 1.5rem;">
-      <h2 style="font-size: 1.25rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-gold); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+    <section class="sidebar-widget" style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 2rem; margin-top: 1.5rem">
+      <h2 style="font-size: 1.25rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-gold); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem">
         {{ description_label }}
       </h2>
-      <div style="font-family: var(--font-serif); font-size: 1.05rem; line-height: 1.8; color: var(--text-main);">
+      <div style=" font-size: 1.05rem; line-height: 1.8; color: var(--text-main)">
         {{ content }}
       </div>
     </section>
@@ -154,7 +154,7 @@ layout: default
       <div class="metadata-list">
         <div class="metadata-item">
           <span class="metadata-label">{{ title_label }}</span>
-          <span class="metadata-value" style="font-weight: 600;">{{ page.title }}</span>
+          <span class="metadata-value" style="font-weight: 600">{{ page.title }}</span>
         </div>
         
         {% if page.author %}
@@ -166,7 +166,7 @@ layout: default
 
         <div class="metadata-item">
           <span class="metadata-label">{{ lang_label }}</span>
-          <span class="metadata-value" style="display: flex; align-items: center; gap: 0.4rem;">
+          <span class="metadata-value" style="display: flex; align-items: center; gap: 0.4rem">
             {% case page.language %}
               {% when 'pt' %}🇧🇷{% when 'es' %}🇪🇸{% when 'it' %}🇮🇹{% when 'nl' %}🇳🇱{% when 'de' %}🇩🇪{% when 'el' %}🇬🇷{% else %}🇬🇧{% endcase %} {{ lang_name }}
           </span>
@@ -174,15 +174,15 @@ layout: default
 
         <div class="metadata-item">
           <span class="metadata-label">{{ format_label }}</span>
-          <span class="metadata-value" style="font-family: monospace; font-size: 0.85rem;">PDF Document (.pdf)</span>
+          <span class="metadata-value" style="font-family: monospace; font-size: 0.85rem">PDF Document (.pdf)</span>
         </div>
       </div>
     </div>
 
     {% if page.pdf %}
-      <div class="sidebar-widget" style="border-color: rgba(214, 48, 49, 0.3);">
-        <h3 class="sidebar-widget-title" style="color: var(--accent-red);">Actions</h3>
-        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+      <div class="sidebar-widget" style="border-color: rgba(214, 48, 49, 0.3)">
+        <h3 class="sidebar-widget-title" style="color: var(--accent-red)">Actions</h3>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem">
           <a href="{{ relative_prefix }}assets/uploads/{{ page.pdf }}" download class="btn btn-primary btn-block">
             📥 {{ download_text }}
           </a>

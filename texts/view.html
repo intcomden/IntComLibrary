@@ -3,18 +3,18 @@ layout: default
 title: Loading Text...
 ---
 
-<div class="reader-container" id="reader-container" style="display: none;">
+<div class="reader-container" id="reader-container" style="display: none">
   <!-- Main content area (Viewer + Info) -->
   <div class="reader-main">
-    <nav class="language-nav" style="justify-content: flex-start; margin-bottom: 1rem;">
-      <a id="back-link" href="#" style="font-weight: 500; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
+    <nav class="language-nav" style="justify-content: flex-start; margin-bottom: 1rem">
+      <a id="back-link" href="#" style="font-weight: 500; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem">
         <!-- Filled by JS -->
       </a>
     </nav>
 
-    <header style="margin-bottom: 2rem;">
-      <h1 id="text-title" style="font-size: 2.2rem; line-height: 1.2; margin-bottom: 0.5rem; font-family: var(--font-serif);"></h1>
-      <p id="text-author" style="font-family: var(--font-display); color: var(--accent-gold); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.05em;"></p>
+    <header style="margin-bottom: 2rem">
+      <h1 id="text-title" style="font-size: 2.2rem; line-height: 1.2; margin-bottom: 0.5rem"></h1>
+      <p id="text-author" style="font-family: var(--font-display); color: var(--accent-gold); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.05em"></p>
     </header>
 
     <div id="pdf-container">
@@ -22,11 +22,11 @@ title: Loading Text...
     </div>
 
     <!-- Text Description / Commentary (Rendered underneath PDF) -->
-    <section class="sidebar-widget" style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 2rem; margin-top: 1.5rem;">
-      <h2 id="commentary-title" style="font-size: 1.25rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-gold); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+    <section class="sidebar-widget" style="background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 2rem; margin-top: 1.5rem">
+      <h2 id="commentary-title" style="font-size: 1.25rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-gold); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem">
         <!-- Filled by JS -->
       </h2>
-      <div id="text-content" style="font-family: var(--font-serif); font-size: 1.05rem; line-height: 1.8; color: var(--text-main); white-space: pre-wrap;">
+      <div id="text-content" style=" font-size: 1.05rem; line-height: 1.8; color: var(--text-main); white-space: pre-wrap">
         <!-- Filled by JS -->
       </div>
     </section>
@@ -39,7 +39,7 @@ title: Loading Text...
       <div class="metadata-list">
         <div class="metadata-item">
           <span class="metadata-label" id="label-title">Title</span>
-          <span class="metadata-value" id="meta-title" style="font-weight: 600;"></span>
+          <span class="metadata-value" id="meta-title" style="font-weight: 600"></span>
         </div>
         
         <div class="metadata-item" id="meta-author-row">
@@ -49,19 +49,19 @@ title: Loading Text...
 
         <div class="metadata-item">
           <span class="metadata-label" id="label-language">Language</span>
-          <span class="metadata-value" id="meta-language" style="display: flex; align-items: center; gap: 0.4rem;"></span>
+          <span class="metadata-value" id="meta-language" style="display: flex; align-items: center; gap: 0.4rem"></span>
         </div>
 
         <div class="metadata-item">
           <span class="metadata-label" id="label-format">Format</span>
-          <span class="metadata-value" style="font-family: monospace; font-size: 0.85rem;">PDF Document (.pdf)</span>
+          <span class="metadata-value" style="font-family: monospace; font-size: 0.85rem">PDF Document (.pdf)</span>
         </div>
       </div>
     </div>
 
-    <div class="sidebar-widget" id="actions-widget" style="border-color: rgba(214, 48, 49, 0.3); display: none;">
-      <h3 class="sidebar-widget-title" id="label-actions" style="color: var(--accent-red);">Actions</h3>
-      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+    <div class="sidebar-widget" id="actions-widget" style="border-color: rgba(214, 48, 49, 0.3); display: none">
+      <h3 class="sidebar-widget-title" id="label-actions" style="color: var(--accent-red)">Actions</h3>
+      <div style="display: flex; flex-direction: column; gap: 0.75rem">
         <a id="btn-download" href="#" download class="btn btn-primary btn-block">
           <!-- Filled by JS -->
         </a>
@@ -73,8 +73,8 @@ title: Loading Text...
   </aside>
 </div>
 
-<div id="loading-container" style="padding: 5rem; text-align: center; color: var(--text-muted);">
-  <p style="font-size: 1.2rem;" id="loading-text">Loading document...</p>
+<div id="loading-container" style="padding: 5rem; text-align: center; color: var(--text-muted)">
+  <p style="font-size: 1.2rem" id="loading-text">Loading document...</p>
 </div>
 
 <script>
@@ -236,7 +236,7 @@ title: Loading Text...
           const fileUrl = data.pdfUrl || (relativePrefix + 'assets/uploads/' + data.pdfName);
           const viewerUrl = 'https://mozilla.github.io/pdf.js/web/viewer.html?file=' + encodeURIComponent(fileUrl);
           pdfContainer.innerHTML = `
-            <div style="position: relative;">
+            <div style="position: relative">
               <iframe 
                 src="${viewerUrl}" 
                 class="pdf-viewer-frame"
@@ -253,8 +253,8 @@ title: Loading Text...
           document.getElementById('actions-widget').style.display = 'block';
         } else {
           pdfContainer.innerHTML = `
-            <div style="padding: 3rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius); text-align: center;">
-              <p style="color: var(--accent-red); font-size: 1.1rem; font-weight: 500;">${t.no_pdf}</p>
+            <div style="padding: 3rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius); text-align: center">
+              <p style="color: var(--accent-red); font-size: 1.1rem; font-weight: 500">${t.no_pdf}</p>
             </div>
           `;
           document.getElementById('actions-widget').style.display = 'none';

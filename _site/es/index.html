@@ -233,8 +233,10 @@ h1, h2, h3 {
 }
 
 .card-title {
+  font-family: var(--font-display);
   font-size: 1.1rem;
   line-height: 1.4;
+  font-weight: 700;
 }
 
 .card-title a {
@@ -256,7 +258,8 @@ h1, h2, h3 {
 }
 
 .card-description {
-  font-size: 0.85rem;
+  font-family: var(--font-serif);
+  font-size: 0.88rem;
   color: var(--text-muted);
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -287,11 +290,26 @@ h1, h2, h3 {
   font-weight: 600;
   color: var(--accent-red);
   text-decoration: none;
-  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .card-footer a:hover {
   color: var(--accent-red-hover);
+}
+
+/* Reading content font overrides for scholarly presentation */
+#text-content,
+.reader-main .sidebar-widget div,
+.markdown-body,
+.markdown-body ul,
+.markdown-body ol,
+.markdown-body li,
+#section-content {
+  font-family: var(--font-serif) !important;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--text-main);
 }
 
 /* Scholarly Text Reader Layout */
@@ -753,7 +771,7 @@ h1, h2, h3 {
           
           
           
-            <div class="sidebar-title" style="margin-top: 1.5rem;">Secciones Temáticas</div>
+            <div class="sidebar-title" style="margin-top: 1.5rem">Secciones Temáticas</div>
             
               
               
@@ -767,9 +785,9 @@ h1, h2, h3 {
     </aside>
 
     <main class="main-content">
-      <div style="margin-bottom: 2.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
-  <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem; font-family: var(--font-serif);">☭ Archivo Teórico</h2>
-  <p style="color: var(--text-muted); font-size: 1rem;">
+      <div style="margin-bottom: 2.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem">
+  <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem">☭ Archivo Teórico</h2>
+  <p style="color: var(--text-muted); font-size: 1rem">
     Acceda a textos teóricos clave, tesis y manifiestos históricos de las tradiciones comunista de izquierda, internacionalista y consejista.
   </p>
 </div>
@@ -778,8 +796,8 @@ h1, h2, h3 {
 <div class="cards-grid" id="cards-grid">
   
   
-    <div style="grid-column: 1 / -1; padding: 3rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius); text-align: center;">
-      <p style="color: var(--text-muted);">Ningún texto disponible en español aún.</p>
+    <div style="grid-column: 1 / -1; padding: 3rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius); text-align: center">
+      <p style="color: var(--text-muted)">Ningún texto disponible en español aún.</p>
     </div>
   
 </div>
@@ -788,9 +806,9 @@ h1, h2, h3 {
     </main>
   </div>
 
-  <footer style="margin-top: auto; padding: 3rem 1rem; border-top: 1px solid var(--border-color); text-align: center; font-size: 0.85rem; color: var(--text-dim); background: var(--bg-secondary);">
-    <p style="font-family: var(--font-display); font-size: 1.1rem; color: var(--accent-gold); margin-bottom: 0.75rem; letter-spacing: 0.05em;">¡Proletarios de todos los países, uníos!</p>
-    <a href="../admin/index.html" style="color: var(--accent-red); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.4rem; transition: var(--transition);" onmouseover="this.style.color='var(--accent-red-hover)'" onmouseout="this.style.color='var(--accent-red)'">
+  <footer style="margin-top: auto; padding: 3rem 1rem; border-top: 1px solid var(--border-color); text-align: center; font-size: 0.85rem; color: var(--text-dim); background: var(--bg-secondary)">
+    <p style="font-family: var(--font-display); font-size: 1.1rem; color: var(--accent-gold); margin-bottom: 0.75rem; letter-spacing: 0.05em">¡Proletarios de todos los países, uníos!</p>
+    <a href="../admin/index.html" style="color: var(--accent-red); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.4rem; transition: var(--transition)" onmouseover="this.style.color='var(--accent-red-hover)'" onmouseout="this.style.color='var(--accent-red)'">
       ⚙️ Panel de Mantenimiento
     </a>
   </footer>
@@ -798,7 +816,7 @@ h1, h2, h3 {
   <script>
     function escapeHtml(str) {
       if (!str) return '';
-      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+      return str.replace(/&/g, "&amp").replace(/</g, "&lt").replace(/>/g, "&gt").replace(/"/g, "&quot").replace(/'/g, "&#039");
     }
 
     function hydrateSidebar() {
@@ -826,7 +844,7 @@ h1, h2, h3 {
           const currentId = urlParams.get('id');
           const isSectionView = window.location.pathname.includes('/sections/view.html');
           
-          let html = `<div class="sidebar-title" style="margin-top: 1.5rem;">${sidebarTitle}</div>`;
+          let html = `<div class="sidebar-title" style="margin-top: 1.5rem">${sidebarTitle}</div>`;
           sections.forEach(s => {
             const is_active = isSectionView && currentId === s.id;
             const linkUrl = `${relativePrefix}sections/view.html?id=${s.id}`;
@@ -869,8 +887,8 @@ h1, h2, h3 {
             if (currentLang === 'el') msg = "Δεν υπάρχουν ακόμη διαθέσιμα κείμενα στα ελληνικά.";
             
             grid.innerHTML = `
-              <div style="grid-column: 1 / -1; padding: 3rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius); text-align: center;">
-                <p style="color: var(--text-muted);">${msg}</p>
+              <div style="grid-column: 1 / -1; padding: 3rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius); text-align: center">
+                <p style="color: var(--text-muted)">${msg}</p>
               </div>
             `;
             return;
@@ -899,7 +917,7 @@ h1, h2, h3 {
             
             card.innerHTML = `
               <div class="card-header">
-                <h3 class="card-title" style="font-family: var(--font-serif);">
+                <h3 class="card-title">
                   <a href="${viewUrl}">${escapeHtml(text.title)}</a>
                 </h3>
               </div>
@@ -907,8 +925,8 @@ h1, h2, h3 {
               ${descHtml}
               <div class="card-footer">
                 <span class="card-meta-tag">${flagAndName}</span>
-                <a href="${viewUrl}" style="font-weight: 600; font-size: 0.85rem; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 0.25rem;">
-                  ${readLabel} <span style="font-size: 1.1rem; line-height: 1;">→</span>
+                <a href="${viewUrl}" style="font-weight: 600; font-size: 0.85rem; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 0.25rem">
+                  ${readLabel} <span style="font-size: 1.1rem; line-height: 1">→</span>
                 </a>
               </div>
             `;
