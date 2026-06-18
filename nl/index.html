@@ -11,12 +11,6 @@ language: nl
   </p>
 </div>
 
-<!-- Search Input -->
-<div class="search-container" style="margin-bottom: 2.5rem;">
-  <span class="search-icon">🔍</span>
-  <input type="text" class="search-input" id="search-input" placeholder="Zoek in archief op titel, auteur of trefwoorden...">
-</div>
-
 <!-- Texts Grid -->
 <div class="cards-grid" id="cards-grid">
   {% assign lang_texts = site.texts | where: "language", "nl" | sort: "title" %}
@@ -50,28 +44,3 @@ language: nl
   {% endfor %}
 </div>
 
-<!-- Client-side filter script -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('search-input');
-    const cards = document.querySelectorAll('.text-card');
-
-    if (searchInput) {
-      searchInput.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase().trim();
-        
-        cards.forEach(card => {
-          const title = card.getAttribute('data-title') || '';
-          const author = card.getAttribute('data-author') || '';
-          const desc = card.getAttribute('data-desc') || '';
-
-          if (title.includes(query) || author.includes(query) || desc.includes(query)) {
-            card.style.display = 'flex';
-          } else {
-            card.style.display = 'none';
-          }
-        });
-      });
-    }
-  });
-</script>

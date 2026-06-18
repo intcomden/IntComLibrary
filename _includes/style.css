@@ -431,12 +431,127 @@ h1, h2, h3 {
   gap: 1rem;
 }
 
-/* Responsive Styles */
+/* Main 2-column Layout */
+.main-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  position: sticky;
+  top: 2rem;
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-right: 0.5rem;
+}
+
+.sidebar-title {
+  font-family: var(--font-display);
+  color: var(--accent-gold);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.4rem;
+  font-weight: 700;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.sidebar-link {
+  display: block;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+  border-left: 2px solid transparent;
+}
+
+.sidebar-link:hover {
+  color: var(--accent-red-hover);
+  background: rgba(255, 255, 255, 0.02);
+  border-left-color: var(--accent-red);
+}
+
+.sidebar-link.active {
+  color: var(--accent-gold);
+  font-weight: 600;
+  background: rgba(229, 193, 88, 0.04);
+  border-left-color: var(--accent-gold);
+}
+
+/* Responsive Styles & Mobile Polish */
 @media (max-width: 900px) {
   .reader-container {
     flex-direction: column-reverse;
   }
   .reader-sidebar {
     width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .sidebar {
+    position: static;
+    max-height: none;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1.5rem;
+    padding-right: 0;
+  }
+
+  .header {
+    padding: 1rem 0.5rem;
+  }
+
+  .logo-link {
+    font-size: 1.4rem;
+    gap: 8px;
+  }
+
+  .logo-img {
+    height: 30px;
+    width: 30px;
+  }
+
+  .lang-nav {
+    gap: 0.3rem 0.5rem;
+  }
+
+  .lang-link {
+    font-size: 0.75rem;
+    padding: 1px 4px;
+  }
+
+  .container {
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+  }
+
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  h1, h2 {
+    font-size: 1.5rem;
   }
 }

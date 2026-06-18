@@ -4,6 +4,58 @@
 {% if first_segment == "pt" or first_segment == "es" or first_segment == "it" or first_segment == "nl" or first_segment == "de" or first_segment == "el" or first_segment == "texts" or first_segment == "sections" or first_segment == "admin" %}
   {% assign relative_prefix = "../" %}
 {% endif %}
+
+{% case page.language %}
+  {% when 'pt' %}
+    {% assign sidebar_title = 'Seções Temáticas' %}
+    {% assign all_texts_text = '📚 Todos os Textos' %}
+    {% assign home_path = 'pt/index.html' %}
+    {% assign admin_text = '⚙️ Painel de Manutenção' %}
+    {% assign search_placeholder = 'Pesquisar acervo...' %}
+    {% assign unite_text = 'Proletários de todos os países, uni-vos!' %}
+  {% when 'es' %}
+    {% assign sidebar_title = 'Secciones Temáticas' %}
+    {% assign all_texts_text = '📚 Todos los Textos' %}
+    {% assign home_path = 'es/index.html' %}
+    {% assign admin_text = '⚙️ Panel de Mantenimiento' %}
+    {% assign search_placeholder = 'Buscar archivo...' %}
+    {% assign unite_text = '¡Proletarios de todos los países, uníos!' %}
+  {% when 'it' %}
+    {% assign sidebar_title = 'Sezioni Tematiche' %}
+    {% assign all_texts_text = '📚 Tutti i Testi' %}
+    {% assign home_path = 'it/index.html' %}
+    {% assign admin_text = '⚙️ Pannello di Manutenzione' %}
+    {% assign search_placeholder = 'Cerca nell’archivio...' %}
+    {% assign unite_text = 'Proletari di tutti i paesi, unitevi!' %}
+  {% when 'nl' %}
+    {% assign sidebar_title = 'Thematische Secties' %}
+    {% assign all_texts_text = '📚 Alle Teksten' %}
+    {% assign home_path = 'nl/index.html' %}
+    {% assign admin_text = '⚙️ Onderhoudspaneel' %}
+    {% assign search_placeholder = 'Zoek in archief...' %}
+    {% assign unite_text = 'Proletariërs aller landen, verenigt u!' %}
+  {% when 'de' %}
+    {% assign sidebar_title = 'Thematische Bereiche' %}
+    {% assign all_texts_text = '📚 Alle Texte' %}
+    {% assign home_path = 'de/index.html' %}
+    {% assign admin_text = '⚙️ Wartungspanel' %}
+    {% assign search_placeholder = 'Archiv durchsuchen...' %}
+    {% assign unite_text = 'Proletarier aller Länder, vereinigt euch!' %}
+  {% when 'el' %}
+    {% assign sidebar_title = 'Θεματικές Ενότητες' %}
+    {% assign all_texts_text = '📚 Όλα τα Κείμενα' %}
+    {% assign home_path = 'el/index.html' %}
+    {% assign admin_text = '⚙️ Πίνακας Συντήρησης' %}
+    {% assign search_placeholder = 'Αναζήτηση αρχείου...' %}
+    {% assign unite_text = 'Προλετάριοι όλων των χωρών, ενωθείτε!' %}
+  {% else %}
+    {% assign sidebar_title = 'Thematic Sections' %}
+    {% assign all_texts_text = '📚 All Texts' %}
+    {% assign home_path = 'index.html' %}
+    {% assign admin_text = '⚙️ Maintenance Panel' %}
+    {% assign search_placeholder = 'Search archive by title, author...' %}
+    {% assign unite_text = 'Proletarians of all countries, unite!' %}
+{% endcase %}
 <!DOCTYPE html>
 <html lang="{{ page.language | default: 'en' }}">
 <head>
@@ -76,31 +128,101 @@
     </div>
   </header>
 
-  <main class="container">
-    {{ content }}
-  </main>
+  <div class="container main-layout">
+    <aside class="sidebar">
+      <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="global-search" placeholder="{{ search_placeholder }}">
+      </div>
+      <nav class="sidebar-nav">
+        <a href="{{ relative_prefix }}{{ home_path }}" class="sidebar-link {% if page.url == '/' or page.url == '/index.html' or page.url == '/pt/index.html' or page.url == '/es/index.html' or page.url == '/it/index.html' or page.url == '/nl/index.html' or page.url == '/de/index.html' or page.url == '/el/index.html' %}active{% endif %}">
+          {{ all_texts_text }}
+        </a>
+        
+        {% assign current_lang = page.language | default: 'en' %}
+        {% assign sections_list = "" | split: "," %}
+        {% for p in site.pages %}
+          {% if p.dir == "/sections/" and p.language == current_lang %}
+            {% assign sections_list = sections_list | push: p %}
+          {% endif %}
+        {% endfor %}
+        {% assign sorted_sections = sections_list | sort: "order" %}
+        
+        {% if sorted_sections.size > 0 %}
+          <div class="sidebar-title" style="margin-top: 1.5rem;">{{ sidebar_title }}</div>
+          {% for s in sorted_sections %}
+            {% assign is_active = false %}
+            {% if page.url == s.url %}
+              {% assign is_active = true %}
+            {% endif %}
+            <a href="{{ relative_prefix }}{{ s.url | remove_first: '/' }}" class="sidebar-link {% if is_active %}active{% endif %}">
+              {{ s.title }}
+            </a>
+          {% endfor %}
+        {% endif %}
+      </nav>
+    </aside>
 
-  {% case page.language %}
-    {% when 'pt' %}
-      {% assign admin_text = '⚙️ Painel de Manutenção' %}
-    {% when 'es' %}
-      {% assign admin_text = '⚙️ Panel de Mantenimiento' %}
-    {% when 'it' %}
-      {% assign admin_text = '⚙️ Pannello di Manutenzione' %}
-    {% when 'nl' %}
-      {% assign admin_text = '⚙️ Onderhoudspaneel' %}
-    {% when 'de' %}
-      {% assign admin_text = '⚙️ Wartungspanel' %}
-    {% when 'el' %}
-      {% assign admin_text = '⚙️ Πίνακας Συντήρησης' %}
-    {% else %}
-      {% assign admin_text = '⚙️ Maintenance Panel' %}
-  {% endcase %}
+    <main class="main-content">
+      {{ content }}
+    </main>
+  </div>
 
-  <footer style="margin-top: auto; padding: 2rem 1rem; border-top: 1px solid var(--border-color); text-align: center; font-size: 0.8rem; color: var(--text-dim);">
-    <a href="{{ relative_prefix }}admin/index.html" style="color: var(--accent-gold); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.4rem; transition: var(--transition);" onmouseover="this.style.color='var(--accent-red-hover)'" onmouseout="this.style.color='var(--accent-gold)'">
+  <footer style="margin-top: auto; padding: 3rem 1rem; border-top: 1px solid var(--border-color); text-align: center; font-size: 0.85rem; color: var(--text-dim); background: var(--bg-secondary);">
+    <p style="font-family: var(--font-display); font-size: 1.1rem; color: var(--accent-gold); margin-bottom: 0.75rem; letter-spacing: 0.05em;">{{ unite_text }}</p>
+    <a href="{{ relative_prefix }}admin/index.html" style="color: var(--accent-red); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.4rem; transition: var(--transition);" onmouseover="this.style.color='var(--accent-red-hover)'" onmouseout="this.style.color='var(--accent-red)'">
       {{ admin_text }}
     </a>
   </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('global-search');
+      const pageUrl = "{{ page.url }}";
+      const isHomepage = pageUrl === "/" || pageUrl === "/index.html" || pageUrl === "/pt/index.html" || pageUrl === "/es/index.html" || pageUrl === "/it/index.html" || pageUrl === "/nl/index.html" || pageUrl === "/de/index.html" || pageUrl === "/el/index.html";
+
+      function filterCards(query) {
+        const cards = document.querySelectorAll('.text-card');
+        cards.forEach(card => {
+          const title = card.getAttribute('data-title') || '';
+          const author = card.getAttribute('data-author') || '';
+          const desc = card.getAttribute('data-desc') || '';
+          if (title.includes(query) || author.includes(query) || desc.includes(query)) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      }
+
+      if (searchInput) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryParam = urlParams.get('q');
+        if (queryParam) {
+          searchInput.value = queryParam;
+          if (isHomepage) {
+            filterCards(queryParam.toLowerCase().trim());
+          }
+        }
+
+        searchInput.addEventListener('input', (e) => {
+          const query = e.target.value;
+          if (isHomepage) {
+            filterCards(query.toLowerCase().trim());
+          }
+        });
+
+        searchInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            const query = e.target.value.trim();
+            if (!isHomepage) {
+              const homeUrl = "{{ relative_prefix }}{{ home_path }}?q=" + encodeURIComponent(query);
+              window.location.href = homeUrl;
+            }
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>
