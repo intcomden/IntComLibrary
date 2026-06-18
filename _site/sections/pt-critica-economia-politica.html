@@ -656,29 +656,7 @@ h1, h2, h3 {
 
   </style>
 
-  <!-- Firebase Compat SDKs (v10.8.0) -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-  <script>
-    window.firebaseReady = false;
-    (async function() {
-      try {
-        const prefix = "../";
-        const configRes = await fetch(prefix + 'assets/js/firebase-config.json');
-        const firebaseConfig = await configRes.json();
-        firebase.initializeApp(firebaseConfig);
-        window.db = firebase.firestore();
-        window.storage = firebase.storage();
-        window.auth = firebase.auth();
-        window.firebaseReady = true;
-        window.dispatchEvent(new Event('firebase-ready'));
-      } catch (e) {
-        console.error("Firebase failed to load:", e);
-      }
-    })();
-  </script>
+
 </head>
 <body>
   <header class="header">
@@ -785,7 +763,12 @@ h1, h2, h3 {
     </aside>
 
     <main class="main-content">
-      <ul>
+      <div class="section-container" style="max-width: 800px; margin: 0 auto; padding: 2rem 1rem">
+  <header style="margin-bottom: 2.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem">
+    <h2 style="font-size: 2rem; margin-bottom: 0.5rem; font-family: var(--font-display); color: var(--accent-red)">Crítica Geral da Economia Política</h2>
+  </header>
+  <div class="markdown-body">
+    <ul>
   <li>Trabalho Assalariado e Capital - Marx + Audiobook</li>
   <li>O Imperialismo, Fase Superior do Capitalismo - Lenin + Audiobook</li>
   <li>Crítica do Programa de Gotha - Marx + Audiobook</li>
@@ -795,147 +778,17 @@ h1, h2, h3 {
   <li>… (add the rest of your list here)</li>
 </ul>
 
+  </div>
+</div>
+
     </main>
   </div>
 
   <footer style="margin-top: auto; padding: 3rem 1rem; border-top: 1px solid var(--border-color); text-align: center; font-size: 0.85rem; color: var(--text-dim); background: var(--bg-secondary)">
     <p style="font-family: var(--font-display); font-size: 1.1rem; color: var(--accent-gold); margin-bottom: 0.75rem; letter-spacing: 0.05em">Proletários de todos os países, uni-vos!</p>
-    <a href="../admin/index.html" style="color: var(--accent-red); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.4rem; transition: var(--transition)" onmouseover="this.style.color='var(--accent-red-hover)'" onmouseout="this.style.color='var(--accent-red)'">
-      ⚙️ Painel de Manutenção
-    </a>
   </footer>
 
   <script>
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str.replace(/&/g, "&amp").replace(/</g, "&lt").replace(/>/g, "&gt").replace(/"/g, "&quot").replace(/'/g, "&#039");
-    }
-
-    function hydrateSidebar() {
-      if (!window.db) return;
-      const currentLang = "pt";
-      const relativePrefix = "../";
-      const sidebarTitle = "Seções Temáticas";
-      
-      window.db.collection("sections")
-        .where("language", "==", currentLang)
-        .orderBy("order")
-        .get()
-        .then(snapshot => {
-          const sections = [];
-          snapshot.forEach(doc => {
-            sections.push({ id: doc.id, ...doc.data() });
-          });
-          
-          if (sections.length === 0) return;
-          
-          const container = document.getElementById('sidebar-sections-container');
-          if (!container) return;
-          
-          const urlParams = new URLSearchParams(window.location.search);
-          const currentId = urlParams.get('id');
-          const isSectionView = window.location.pathname.includes('/sections/view.html');
-          
-          let html = `<div class="sidebar-title" style="margin-top: 1.5rem">${sidebarTitle}</div>`;
-          sections.forEach(s => {
-            const is_active = isSectionView && currentId === s.id;
-            const linkUrl = `${relativePrefix}sections/view.html?id=${s.id}`;
-            html += `<a href="${linkUrl}" class="sidebar-link ${is_active ? 'active' : ''}">${escapeHtml(s.title)}</a>`;
-          });
-          container.innerHTML = html;
-        })
-        .catch(err => {
-          console.warn("Failed to load sections from Firestore:", err);
-        });
-    }
-
-    function hydrateHomepageTexts() {
-      if (!window.db) return;
-      const currentLang = "pt";
-      const relativePrefix = "../";
-      
-      const grid = document.getElementById('cards-grid');
-      if (!grid) return;
-      
-      window.db.collection("texts")
-        .where("language", "==", currentLang)
-        .get()
-        .then(snapshot => {
-          const texts = [];
-          snapshot.forEach(doc => {
-            texts.push({ id: doc.id, ...doc.data() });
-          });
-          
-          // Sort alphabetically by title
-          texts.sort((a, b) => a.title.localeCompare(b.title));
-          
-          if (texts.length === 0) {
-            let msg = "No texts available in English yet.";
-            if (currentLang === 'pt') msg = "Nenhum texto disponível em português ainda.";
-            if (currentLang === 'es') msg = "Ningún texto disponible en español aún.";
-            if (currentLang === 'it') msg = "Nessun testo disponibile in italiano ancora.";
-            if (currentLang === 'nl') msg = "Nog geen teksten beschikbaar in het Nederlands.";
-            if (currentLang === 'de') msg = "Keine Texte auf Deutsch verfügbar.";
-            if (currentLang === 'el') msg = "Δεν υπάρχουν ακόμη διαθέσιμα κείμενα στα ελληνικά.";
-            
-            grid.innerHTML = `
-              <div style="grid-column: 1 / -1; padding: 3rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--border-radius); text-align: center">
-                <p style="color: var(--text-muted)">${msg}</p>
-              </div>
-            `;
-            return;
-          }
-          
-          let flagAndName = "🇬🇧 English";
-          let readLabel = "READ TEXT";
-          if (currentLang === 'pt') { flagAndName = "🇧🇷 Português"; readLabel = "LER TEXTO"; }
-          if (currentLang === 'es') { flagAndName = "🇪🇸 Español"; readLabel = "LEER TEXTO"; }
-          if (currentLang === 'it') { flagAndName = "🇮🇹 Italiano"; readLabel = "LEGGI IL TESTO"; }
-          if (currentLang === 'nl') { flagAndName = "🇳🇱 Nederlands"; readLabel = "LEES TEKST"; }
-          if (currentLang === 'de') { flagAndName = "🇩🇪 Deutsch"; readLabel = "TEXT LESEN"; }
-          if (currentLang === 'el') { flagAndName = "🇬🇷 Ελληνικά"; readLabel = "ΑΝΑΓΝΩΣΗ ΚΕΙΜΕΝΟΥ"; }
-          
-          grid.innerHTML = "";
-          texts.forEach(text => {
-            const card = document.createElement('div');
-            card.className = 'text-card';
-            card.setAttribute('data-title', text.title.toLowerCase());
-            card.setAttribute('data-author', (text.author || '').toLowerCase());
-            card.setAttribute('data-desc', (text.description || '').toLowerCase());
-            
-            const viewUrl = `${relativePrefix}texts/view.html?id=${text.id}`;
-            const authorHtml = text.author ? `<span class="card-author">${escapeHtml(text.author)}</span>` : '';
-            const descHtml = text.description ? `<p class="card-description">${escapeHtml(text.description)}</p>` : '';
-            
-            card.innerHTML = `
-              <div class="card-header">
-                <h3 class="card-title">
-                  <a href="${viewUrl}">${escapeHtml(text.title)}</a>
-                </h3>
-              </div>
-              ${authorHtml}
-              ${descHtml}
-              <div class="card-footer">
-                <span class="card-meta-tag">${flagAndName}</span>
-                <a href="${viewUrl}" style="font-weight: 600; font-size: 0.85rem; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 0.25rem">
-                  ${readLabel} <span style="font-size: 1.1rem; line-height: 1">→</span>
-                </a>
-              </div>
-            `;
-            grid.appendChild(card);
-          });
-          
-          // Re-apply search filter
-          const searchInput = document.getElementById('global-search');
-          if (searchInput && searchInput.value) {
-            filterCards(searchInput.value.toLowerCase().trim());
-          }
-        })
-        .catch(err => {
-          console.warn("Failed to load texts from Firestore:", err);
-        });
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
       const searchInput = document.getElementById('global-search');
       const pageUrl = "/sections/pt-critica-economia-politica.html";
@@ -981,17 +834,6 @@ h1, h2, h3 {
             }
           }
         });
-      }
-
-      function onFirebaseReady() {
-        hydrateSidebar();
-        if (isHomepage) hydrateHomepageTexts();
-      }
-
-      if (window.firebaseReady) {
-        onFirebaseReady();
-      } else {
-        window.addEventListener('firebase-ready', onFirebaseReady);
       }
     });
   </script>

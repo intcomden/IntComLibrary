@@ -1,4 +1,5 @@
 ---
+layout: section
 title: Crítica General de la Economía Política
 language: es
 order: 10
