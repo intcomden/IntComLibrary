@@ -1,8 +1,9 @@
 {
-  "apiKey": "YOUR_API_KEY",
-  "authDomain": "YOUR_PROJECT_ID.firebaseapp.com",
-  "projectId": "YOUR_PROJECT_ID",
-  "storageBucket": "YOUR_PROJECT_ID.appspot.com",
-  "messagingSenderId": "YOUR_SENDER_ID",
-  "appId": "YOUR_APP_ID"
+  "apiKey": "AIzaSyCHZG3my_y8uoCifgjhyjlMQMFkvkDPQwk",
+  "authDomain": "library-8847b.firebaseapp.com",
+  "projectId": "library-8847b",
+  "storageBucket": "library-8847b.firebasestorage.app",
+  "messagingSenderId": "1069869941315",
+  "appId": "1:1069869941315:web:3f2026ea6bb04686528af6",
+  "measurementId": "G-H2SVJTSVDY"
 }
