@@ -828,7 +828,9 @@
           // Check if file already exists on GitHub to obtain sha (so we don't crash)
           let existingPdfSha = null;
           try {
-            const pdfCheck = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/assets/uploads/${pdfFilename}`);
+            const pdfCheck = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/assets/uploads/${pdfFilename}`, {
+              headers: { 'Authorization': `token ${token}` }
+            });
             if (pdfCheck.ok) {
               const checkData = await pdfCheck.json();
               existingPdfSha = checkData.sha;
@@ -856,8 +858,24 @@ ${description}`;
         const safeSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         const finalPath = editPath || `_texts/${language}-${safeSlug}.md`;
         
+        // Check if markdown file already exists to obtain its sha (prevents conflict/overwrite failures)
+        let existingMdSha = null;
+        if (editPath && editPath === finalPath) {
+          existingMdSha = editSha;
+        } else {
+          try {
+            const mdCheck = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${finalPath}`, {
+              headers: { 'Authorization': `token ${token}` }
+            });
+            if (mdCheck.ok) {
+              const checkData = await mdCheck.json();
+              existingMdSha = checkData.sha;
+            }
+          } catch(e) {}
+        }
+        
         showStatus("Uploading Markdown document to _texts/...", "blue");
-        await githubPutFile(finalPath, btoa(unescape(encodeURIComponent(mdContent))), `Publish text: ${title}`, editSha || null);
+        await githubPutFile(finalPath, btoa(unescape(encodeURIComponent(mdContent))), `Publish text: ${title}`, existingMdSha);
 
         // C. If editing changed path (e.g. language/title rename), delete old file
         if (editPath && editPath !== finalPath) {
@@ -1101,8 +1119,24 @@ ${content}`;
 
         const finalPath = `sections/${language}-${slug}.md`;
 
+        // Check if section file already exists to obtain its sha (prevents conflict/overwrite failures)
+        let existingSectionSha = null;
+        if (editPath && editPath === finalPath) {
+          existingSectionSha = editSha;
+        } else {
+          try {
+            const sectionCheck = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${finalPath}`, {
+              headers: { 'Authorization': `token ${token}` }
+            });
+            if (sectionCheck.ok) {
+              const checkData = await sectionCheck.json();
+              existingSectionSha = checkData.sha;
+            }
+          } catch(e) {}
+        }
+
         showStatus("Uploading Section file to sections/...", "blue");
-        await githubPutFile(finalPath, btoa(unescape(encodeURIComponent(mdContent))), `Save section: ${title}`, editSha || null);
+        await githubPutFile(finalPath, btoa(unescape(encodeURIComponent(mdContent))), `Save section: ${title}`, existingSectionSha);
 
         // Delete old path if we renamed the section or changed its language
         if (editPath && editPath !== finalPath) {

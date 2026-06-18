@@ -555,3 +555,66 @@ h1, h2, h3 {
     font-size: 1.5rem;
   }
 }
+
+/* Main Content Styling (Markdown rendering for Sections and Texts) */
+.main-content h1 {
+  font-size: 1.9rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+  color: var(--accent-red);
+}
+
+.main-content h2 {
+  font-size: 1.4rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: var(--accent-red);
+}
+
+.main-content p {
+  font-size: 1.05rem;
+  color: var(--text-main);
+  margin-bottom: 1.25rem;
+  line-height: 1.75;
+}
+
+.main-content ul, .main-content ol {
+  margin: 1.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.main-content li {
+  font-size: 1.05rem;
+  color: var(--text-main);
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+}
+
+.main-content a {
+  color: var(--accent-gold);
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(229, 193, 88, 0.4);
+  transition: var(--transition);
+}
+
+.main-content a:hover {
+  color: var(--accent-red-hover);
+  border-bottom-color: var(--accent-red);
+}
+
+/* Custom list items for section lists (militant communist theme) */
+.main-content ul li {
+  list-style: none;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.main-content ul li::before {
+  content: "★";
+  position: absolute;
+  left: 0;
+  color: var(--accent-gold);
+  font-size: 0.8rem;
+  top: 0.25rem;
+}
