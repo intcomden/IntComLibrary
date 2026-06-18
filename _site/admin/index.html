@@ -277,7 +277,7 @@
     <div id="login-screen">
       <h1 style="text-align: center;">Moderator Access</h1>
       <div id="login-status" class="status error hidden"></div>
-      <input type="text" id="mod-username" placeholder="Username (moderator)">
+      <input type="email" id="mod-email" placeholder="Email Address">
       <input type="password" id="mod-password" placeholder="Password">
       <button onclick="modLogin()" style="width: 100%;">Sign In</button>
       <div style="text-align: center; margin-top: 1.5rem;">
@@ -290,7 +290,7 @@
     <div id="create-account-screen" class="hidden">
       <h1 style="text-align: center;">Create Moderator Account</h1>
       <div id="create-status" class="status error hidden"></div>
-      <input type="text" id="new-username" placeholder="Choose Username">
+      <input type="email" id="new-email" placeholder="Email Address">
       <input type="password" id="new-password" placeholder="Password (min 6 chars)">
       <input type="password" id="confirm-password" placeholder="Confirm Password">
       <button onclick="createAccount()" style="width: 100%;">Register Account</button>
@@ -438,6 +438,9 @@
         firebase.initializeApp(firebaseConfig);
         window.db = firebase.firestore();
         window.storage = firebase.storage();
+        // Set retry times to 5 seconds to fail fast and display configuration/CORS errors
+        window.storage.setMaxUploadRetryTime(5000);
+        window.storage.setMaxOperationRetryTime(5000);
         window.auth = firebase.auth();
         window.firebaseReady = true;
         window.dispatchEvent(new Event('firebase-ready'));
@@ -467,12 +470,12 @@
 
     // Authentication Actions
     function modLogin() {
-      const user = document.getElementById('mod-username').value.trim();
+      const email = document.getElementById('mod-email').value.trim();
       const pass = document.getElementById('mod-password').value;
       const status = document.getElementById('login-status');
       
-      if (!user || !pass) {
-        status.innerHTML = "❌ Username and password are required";
+      if (!email || !pass) {
+        status.innerHTML = "❌ Email and password are required";
         status.classList.remove('hidden');
         return;
       }
@@ -480,8 +483,6 @@
       status.innerHTML = "Signing in...";
       status.className = "status info";
       status.classList.remove('hidden');
-      
-      const email = user.includes('@') ? user : `${user}@redarchive.local`;
       
       auth.signInWithEmailAndPassword(email, pass)
         .then(() => {
@@ -507,12 +508,12 @@
     }
 
     function createAccount() {
-      const user = document.getElementById('new-username').value.trim();
+      const email = document.getElementById('new-email').value.trim();
       const pass = document.getElementById('new-password').value;
       const confirmPass = document.getElementById('confirm-password').value;
       const status = document.getElementById('create-status');
 
-      if (!user || !pass || !confirmPass) {
+      if (!email || !pass || !confirmPass) {
         status.innerHTML = "❌ All fields are required";
         status.className = "status error";
         status.classList.remove('hidden');
@@ -536,8 +537,6 @@
       status.innerHTML = "Registering account...";
       status.className = "status info";
       status.classList.remove('hidden');
-
-      const email = user.includes('@') ? user : `${user}@redarchive.local`;
 
       auth.createUserWithEmailAndPassword(email, pass)
         .then(() => {
