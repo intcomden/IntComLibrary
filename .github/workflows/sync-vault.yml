@@ -1,0 +1,81 @@
+name: Sync from Obsidian Vault
+
+on:
+  # Runs daily at midnight (you can change this cron expression if needed)
+  schedule:
+    - cron: "0 0 * * *" # Daily. To run hourly, use: "0 * * * *"
+
+  # Allows manual runs from the Actions tab in GitHub
+  workflow_dispatch:
+
+  # Allows remote webhook triggers (e.g. from your friend's repository upon pushing)
+  repository_dispatch:
+    types: [sync-vault]
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout this Jekyll repository
+      - name: Checkout Jekyll Repo
+        uses: actions/checkout@v4
+
+      # 2. Checkout your friend's Obsidian Vault repository
+      # Replace 'owner/repo-name' with your friend's actual repository path.
+      # If the vault repository is PUBLIC, you can remove the 'token' line.
+      # If the vault repository is PRIVATE, create a Personal Access Token (PAT) with repo read access
+      # on your friend's account and save it as a Secret named OBSIDIAN_VAULT_PAT in your repository settings.
+      - name: Checkout Obsidian Vault Repo
+        uses: actions/checkout@v4
+        with:
+          repository: "YOUR_FRIEND_GITHUB_USERNAME/YOUR_FRIEND_VAULT_REPO" # <-- UPDATE THIS
+          path: vault-temp
+          token: ${{ secrets.OBSIDIAN_VAULT_PAT || secrets.GITHUB_TOKEN }}
+
+      # 3. Copy files into Jekyll directories
+      - name: Sync Markdown & PDFs
+        run: |
+          # Create target directories if they don't exist
+          mkdir -p _texts
+          mkdir -p sections
+          mkdir -p assets/uploads
+
+          # Sync Markdown Texts (if a 'texts' folder exists in the vault)
+          if [ -d "vault-temp/texts" ]; then
+            echo "Syncing texts..."
+            cp -r vault-temp/texts/* _texts/ 2>/dev/null || true
+          fi
+
+          # Sync Markdown Sections (if a 'sections' folder exists in the vault)
+          if [ -d "vault-temp/sections" ]; then
+            echo "Syncing sections..."
+            cp -r vault-temp/sections/* sections/ 2>/dev/null || true
+          fi
+
+          # Find and copy all PDF attachments from anywhere in the vault to assets/uploads/
+          echo "Syncing PDFs..."
+          find vault-temp -name "*.pdf" -exec cp {} assets/uploads/ \; 2>/dev/null || true
+
+          # Remove the temporary vault checkout directory
+          rm -rf vault-temp
+
+      # 4. Commit and push any new or updated files back to this repository
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # Stage the changed files
+          git add _texts/ sections/ assets/uploads/
+          
+          # Only commit and push if there are changes
+          if git diff-index --quiet HEAD --; then
+            echo "No changes detected. Sync complete."
+          else
+            git commit -m "Automated sync from Obsidian Vault"
+            git push origin main
+          fi
